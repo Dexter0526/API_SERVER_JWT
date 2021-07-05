@@ -1,5 +1,7 @@
 package com.api.dex.utils;
 
+import com.api.dex.domain.Member;
+import com.api.dex.domain.MemberRepository;
 import com.api.dex.domain.MemberRole;
 import com.api.dex.service.SecurityUserService;
 import io.jsonwebtoken.Jws;
@@ -7,6 +9,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,7 +23,9 @@ import java.util.Date;
 @RequiredArgsConstructor
 @Component
 public class JwtTokenProvider {
-    private String secretKey = "1vb12l5";
+
+    @Value("${jwt.secret}")
+    private String secretKey;
 
 //    public JwtTokenProvider(String secretKey){
 //        this.secretKey = secretKey;
@@ -28,6 +33,8 @@ public class JwtTokenProvider {
 
     // 토큰 유효시간 30분
 //    private long tokenValidTime = 30 * 60 * 1000L;
+    @Autowired
+    private MemberRepository memberRepository;
 
     @Autowired
     private SecurityUserService securityUserService;
@@ -50,6 +57,24 @@ public class JwtTokenProvider {
                 .signWith(SignatureAlgorithm.HS256, secretKey)  // 사용할 암호화 알고리즘과
                 // signature 에 들어갈 secret값 세팅
                 .compact();
+    }
+
+    public String createRefreshToken(String userPk, MemberRole roles, long tokenValidTime) {
+        Claims claims = Jwts.claims().setSubject(userPk); // JWT payload 에 저장되는 정보단위
+        claims.put("roles", roles.getClass().getName()); // 정보는 key / value 쌍으로 저장된다.
+        Date now = new Date();
+
+        String refreshToken = Jwts.builder()
+                .setClaims(claims) // 정보 저장
+                .setIssuedAt(now) // 토큰 발행 시간 정보
+                .setExpiration(new Date(now.getTime() + tokenValidTime)) // set Expire Time
+                .signWith(SignatureAlgorithm.HS256, secretKey)  // 사용할 암호화 알고리즘과
+                // signature 에 들어갈 secret값 세팅
+                .compact();
+        Member member = memberRepository.findByAccount(userPk).get();
+        member.setToken(refreshToken);
+
+        return memberRepository.save(member).getToken();
     }
 
     public Authentication getAuthentication(String token) {

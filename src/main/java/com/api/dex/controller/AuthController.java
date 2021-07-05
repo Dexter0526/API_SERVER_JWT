@@ -79,7 +79,7 @@ public class AuthController {
         }
         logger.info("controller login:::" + member.getAccount());
         String accessToken = jwtTokenProvider.createToken(member.getAccount(), member.getMemberRole(), accessTokenValidTime);
-        String refreshToken = jwtTokenProvider.createToken(member.getAccount(), member.getMemberRole(), refreshTokenValidTime);
+        String refreshToken = jwtTokenProvider.createRefreshToken(member.getAccount(), member.getMemberRole(), refreshTokenValidTime);
 
         httpHeaders.add("accessToken", accessToken);
         httpHeaders.add("refreshToken", refreshToken);
