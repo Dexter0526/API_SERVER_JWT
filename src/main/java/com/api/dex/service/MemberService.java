@@ -48,9 +48,14 @@ public class MemberService {
         return null;
     }
 
-    public Member updateMember(MemberDto memberDto){
+    public Member updateMember(MemberDto memberDto, String account){
+        Member member = memberRepository.findByAccount(account)
+                .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 E-MAIL 입니다."));
 
-        return null;
+        member.setPassword(passwordEncoder.encode(memberDto.getPassword()));
+        member.setName(memberDto.getName());
+
+        return memberRepository.save(member);
     }
 
 

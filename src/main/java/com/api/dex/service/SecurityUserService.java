@@ -39,10 +39,10 @@ public class SecurityUserService implements UserDetailsService {
             logger.info("loadUserByUsername" + member.getName());
             logger.info("*************************************************************");
 
-            if(member.getToken() != null) {
-                logger.info("loadUserByUsername:TOKEN IS NOT NULL!!!");
-                return SecurityUser.builder().build();
-            }
+//            if(member.getToken() != null) {
+//                logger.info("loadUserByUsername:TOKEN IS NOT NULL!!!");
+//                return SecurityUser.builder().build();
+//            }
 
 //            MemberRole auth = member.getRole();
 //            memberRoles.add(auth);

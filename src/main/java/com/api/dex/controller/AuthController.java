@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -43,7 +44,7 @@ public class AuthController {
     private JsonParser jsonParser;
 
     // 회원가입
-    @PostMapping("/sign")
+    @PostMapping("/")
     public ResponseEntity<String> sign(@RequestBody MemberDto memberDto) {
         Gson gson = new Gson();
         JsonObject items = new JsonObject();
@@ -66,7 +67,7 @@ public class AuthController {
     }
 
     // 로그인
-    @PostMapping("/login")
+    @PutMapping("/")
     public ResponseEntity login(@RequestBody Map<String, String> user) {
         Gson gson = new Gson();
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -91,6 +92,23 @@ public class AuthController {
         return new ResponseEntity(gson.toJson(items), httpHeaders, HttpStatus.OK);
     }
 
+    @PutMapping("/{account}")
+    public ResponseEntity updateMember(@RequestBody MemberDto memberDto, @PathVariable String account){
+        Gson gson = new Gson();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        JsonObject items = new JsonObject();
+        JsonObject data = new JsonObject();
+
+        Member member = memberService.updateMember(memberDto, account);
+
+        data.addProperty("account", member.getAccount());
+        data.addProperty("name", member.getName());
+        items.add("items", data);
+
+        return new ResponseEntity(gson.toJson(items), httpHeaders, HttpStatus.OK);
+
+    }
+
 
     @PostMapping("/authority")
     public ResponseEntity<JsonObject> isValidateToken(@RequestBody String account){
@@ -98,8 +116,8 @@ public class AuthController {
         return null;
     }
 
-    @GetMapping("/info")
-    public ResponseEntity info(Authentication authentication){
+    @GetMapping("/")
+    public ResponseEntity info(Authentication authentication, @RequestHeader HttpHeaders headers){
         Gson gson = new Gson();
         JsonObject items = new JsonObject();
         JsonObject data = new JsonObject();
@@ -118,6 +136,6 @@ public class AuthController {
         logger.info("controller info:::" + data.get("name"));
         logger.info("controller info:::" + items.get("items"));
 
-        return new ResponseEntity<>(gson.toJson(items), HttpStatus.OK);
+        return new ResponseEntity<>(gson.toJson(items), headers, HttpStatus.OK);
     }
 }
