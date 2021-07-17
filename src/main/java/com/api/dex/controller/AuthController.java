@@ -109,6 +109,31 @@ public class AuthController {
 
     }
 
+    @DeleteMapping("/{account}")
+    public ResponseEntity deleteMember(Authentication authentication, @PathVariable String account){
+        Gson gson = new Gson();
+        JsonObject items = new JsonObject();
+        JsonObject data = new JsonObject();
+
+        SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();
+
+        if(account.equals(securityUser.getMember().getAccount())){
+            memberService.deleteMember(securityUser.getMember().getAccount());
+
+            data.addProperty("account", securityUser.getMember().getAccount());
+            data.addProperty("message", "Success");
+            items.add("items", data);
+
+            return new ResponseEntity(gson.toJson(items), HttpStatus.OK);
+        }else{
+            data.addProperty("account", securityUser.getMember().getAccount());
+            data.addProperty("message", "Fail");
+            items.add("items", data);
+
+            return new ResponseEntity(gson.toJson(items), HttpStatus.BAD_GATEWAY);
+        }
+    }
+
 
     @PostMapping("/authority")
     public ResponseEntity<JsonObject> isValidateToken(@RequestBody String account){
