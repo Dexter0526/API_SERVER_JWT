@@ -1,13 +1,13 @@
 package com.api.dex.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper=false)
@@ -30,6 +30,10 @@ public class Member extends BaseEntity implements Serializable  {
 
     @Column(length = 1000)
     private String token;
+
+    @OneToMany(mappedBy = "boardMember", cascade = CascadeType.REMOVE)
+    @JsonManagedReference
+    private List<Board> boards;
 
     @Builder
     public Member(MemberRole memberRole, String account, String password, String name, String token) {
