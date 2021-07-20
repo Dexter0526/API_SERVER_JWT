@@ -19,6 +19,8 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Component
@@ -89,10 +91,11 @@ public class JwtTokenProvider {
     }
 
     // Request의 Header에서 token 값을 가져옵니다. "X-AUTH-TOKEN" : "TOKEN값'
-    public String resolveToken(HttpServletRequest request) {
-//        logger.info("request header === " + request.getHeader("X-AUTH-TOKEN"));
-        return request.getHeader("X-AUTH-TOKEN");
-//        return request.getHeader("Authorization");
+    public Map<String, String> resolveToken(HttpServletRequest request) {
+        Map<String, String> token = new HashMap();
+        token.put("Authorization", request.getHeader("Authorization"));
+        token.put("X-AUTH-TOKEN", request.getHeader("X-AUTH-TOKEN"));
+        return token;
     }
 
     // 토큰의 유효성 + 만료일자 확인
@@ -102,6 +105,14 @@ public class JwtTokenProvider {
             return !claims.getBody().getExpiration().before(new Date());
         } catch (Exception e) {
             return false;
+        }
+    }
+    public Member validateRefreshToken(String refreshToken) {
+        Member member = memberRepository.findByToken(refreshToken).get();
+        if (member != null) {
+            return member;
+        } else {
+            return null;
         }
     }
 }
