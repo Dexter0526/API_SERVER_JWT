@@ -13,12 +13,14 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
 
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends GenericFilterBean {
     private final JwtTokenProvider jwtTokenProvider;
+    private long tokenValidTime = 30 * 60 * 1000L;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -27,6 +29,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         Map<String, String> tokenMap = jwtTokenProvider.resolveToken((HttpServletRequest) request);
         String token = tokenMap.get("X-AUTH-TOKEN");
         String refreshToken = tokenMap.get("Authorization");
+        HttpServletResponse httpServletResponse = (HttpServletResponse) response;
         // 유효한 토큰인지 확인합니다.
         if (token != null && jwtTokenProvider.validateToken(token)) {
             // 토큰이 유효하면 토큰으로부터 유저 정보를 받아옵니다.
@@ -36,10 +39,11 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             SecurityContext context = SecurityContextHolder.getContext();
             context.setAuthentication(authentication);
             logger.info("doFilter authentication === " + authentication.getName());
+            httpServletResponse.setHeader("X-AUTH-TOKEN", token);
         }else if(refreshToken != null && jwtTokenProvider.validateToken(refreshToken)){
             Member member = jwtTokenProvider.validateRefreshToken(refreshToken);
             if(member != null){
-                String accessToken = jwtTokenProvider.createToken(member.getAccount(), member.getMember().getRole(), tokenValidTime);
+                String accessToken = jwtTokenProvider.createToken(member.getAccount(), member.getMemberRole(), tokenValidTime);
                 // 토큰이 유효하면 토큰으로부터 유저 정보를 받아옵니다.
                 Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
                 // SecurityContext 에 Authentication 객체를 저장합니다.
