@@ -57,6 +57,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         }
         chain.doFilter(request, response);
         logger.info("doFilter token === " + token);
+        logger.info("doFilter refreshToken === " + refreshToken);
 
     }
 }
