@@ -35,7 +35,8 @@ public class MemberService {
 
     public Member insertMember(MemberDto memberDto){
         logger.info("insert member:::" + memberDto.getAccount());
-        if(memberRepository.findByAccount(memberDto.getAccount()).get() == null){
+        Boolean result = memberRepository.findByAccount(memberDto.getAccount()).isEmpty();
+        if(result){
             if(memberDto.getMemberRole() == null) memberDto.setMemberRole(new MemberRole(MemberRole.RoleType.ROLE_USER));
             return save(memberDto);
         }else{

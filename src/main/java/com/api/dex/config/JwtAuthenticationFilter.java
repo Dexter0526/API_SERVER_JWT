@@ -54,6 +54,9 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
                 httpServletResponse.setHeader("X-AUTH-TOKEN", accessToken);
             }
+        }else if(token != null && refreshToken == null){
+            ((HttpServletResponse) response).setStatus(401);
+            return;
         }
         chain.doFilter(request, response);
         logger.info("doFilter token === " + token);

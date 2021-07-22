@@ -136,9 +136,29 @@ public class AuthController {
 
 
     @PostMapping("/authority")
-    public ResponseEntity<JsonObject> isValidateToken(@RequestBody String account){
+    public ResponseEntity<JsonObject> isValidateEmail(@RequestBody Map<String, String> user){
+        Gson gson = new Gson();
+        JsonObject items = new JsonObject();
+        String account = user.get("account");
+        account = account.replaceAll("\"", "");
 
-        return null;
+        if(!account.contains("@") || !account.split("@")[1].contains(".")){
+            items.addProperty("message", "이메일 형식이 아닙니다.");
+            return new ResponseEntity(gson.toJson(items), HttpStatus.ACCEPTED);
+        }
+
+        Boolean result = memberRepository.findByAccount(account).isPresent();
+        logger.info("auth result:::" + result);
+        if(result){
+            items.addProperty("message", "이미 존재하는 이메일 입니다.");
+            return new ResponseEntity(gson.toJson(items), HttpStatus.ACCEPTED);
+        }else{
+            items.addProperty("account", account);
+            items.addProperty("message", "가입 가능한 이메일 입니다.");
+            return new ResponseEntity(gson.toJson(items), HttpStatus.OK);
+        }
+
+
     }
 
     @GetMapping("/")
@@ -147,20 +167,28 @@ public class AuthController {
         JsonObject items = new JsonObject();
         JsonObject data = new JsonObject();
 
-        SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();
 
-        String account = securityUser.getMember().getAccount();
-        String name = securityUser.getUsername();
-        String role = securityUser.getMember().getMemberRole().getRoleName().name();
+        if(authentication != null){
+            SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();
+            String account = securityUser.getMember().getAccount();
+            String name = securityUser.getUsername();
+            String role = securityUser.getMember().getMemberRole().getRoleName().name();
 
-        data.addProperty("account", account);
-        data.addProperty("name", name);
-        data.addProperty("role", role);
-        items.add("items", data);
+            data.addProperty("account", account);
+            data.addProperty("name", name);
+            data.addProperty("role", role);
+            items.add("items", data);
 
-        logger.info("controller info:::" + data.get("name"));
-        logger.info("controller info:::" + items.get("items"));
+            logger.info("controller info:::" + data.get("name"));
+            logger.info("controller info:::" + items.get("items"));
 
-        return new ResponseEntity<>(gson.toJson(items), headers, HttpStatus.OK);
+            return new ResponseEntity<>(gson.toJson(items), headers, HttpStatus.OK);
+        }else{
+            data.addProperty("message", "Member info is null");
+            items.add("items", data);
+            return new ResponseEntity<>(gson.toJson(items), headers, HttpStatus.BAD_REQUEST);
+        }
+
+
     }
 }
