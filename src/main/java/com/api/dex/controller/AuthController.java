@@ -144,14 +144,14 @@ public class AuthController {
 
         if(!account.contains("@") || !account.split("@")[1].contains(".")){
             items.addProperty("message", "이메일 형식이 아닙니다.");
-            return new ResponseEntity(gson.toJson(items), HttpStatus.ACCEPTED);
+            return new ResponseEntity(gson.toJson(items), HttpStatus.BAD_REQUEST);
         }
 
         Boolean result = memberRepository.findByAccount(account).isPresent();
         logger.info("auth result:::" + result);
         if(result){
             items.addProperty("message", "이미 존재하는 이메일 입니다.");
-            return new ResponseEntity(gson.toJson(items), HttpStatus.ACCEPTED);
+            return new ResponseEntity(gson.toJson(items), HttpStatus.CONFLICT);
         }else{
             items.addProperty("account", account);
             items.addProperty("message", "가입 가능한 이메일 입니다.");
