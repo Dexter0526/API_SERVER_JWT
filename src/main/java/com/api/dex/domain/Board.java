@@ -1,6 +1,7 @@
 package com.api.dex.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
@@ -25,6 +26,7 @@ public class Board extends BaseEntity implements Serializable {
 
     @ManyToOne
     @JsonBackReference
+    @JsonIgnore
     @JoinColumn(name = "member_id")
     private Member boardMember;
 

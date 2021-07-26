@@ -31,7 +31,7 @@ public class Member extends BaseEntity implements Serializable  {
     @Column(length = 1000)
     private String token;
 
-    @OneToMany(mappedBy = "boardMember", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "boardMember", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Board> boards;
 
