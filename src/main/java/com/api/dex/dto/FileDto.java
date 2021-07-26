@@ -10,5 +10,5 @@ public class FileDto {
     private String originalName;
     private String serverName;
     private String path;
-    private Board fileBoard;
+    private long boardId;
 }

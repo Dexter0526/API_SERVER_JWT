@@ -9,4 +9,5 @@ public class BoardDto {
     private String category;
     private String title;
     private String content;
+    private String name;
 }
