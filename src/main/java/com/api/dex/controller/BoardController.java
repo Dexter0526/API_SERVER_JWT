@@ -2,7 +2,9 @@ package com.api.dex.controller;
 
 import com.api.dex.domain.SecurityUser;
 import com.api.dex.dto.BoardDto;
+import com.api.dex.dto.FileDto;
 import com.api.dex.service.BoardService;
+import com.api.dex.service.FileService;
 import com.api.dex.utils.JwtTokenProvider;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -14,14 +16,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -35,9 +37,12 @@ public class BoardController {
     @Autowired
     private BoardService boardService;
 
+    @Autowired
+    private FileService fileService;
+
 
     @PostMapping("/")
-    public ResponseEntity insertBoard(@RequestBody BoardDto boardDto, Authentication authentication){
+    public ResponseEntity insertBoard(@RequestBody BoardDto boardDto, Authentication authentication, @RequestParam("files") MultipartFile[] multipartFile) throws IOException {
         logger.info("Insert board controller:::" + boardDto.getTitle());
         Gson gson = new Gson();
         JsonObject items = new JsonObject();
@@ -45,6 +50,9 @@ public class BoardController {
         SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();
 
         boardDto = boardService.insertBoard(boardDto, securityUser.getMember().getAccount());
+        List<FileDto> fileDtoList = fileService.insertFileList(multipartFile, boardDto.getId());
+
+        boardDto.setFileDtos(fileDtoList);
 
         items.add("items", gson.toJsonTree(boardDto));
         items.addProperty("message", "success!");
