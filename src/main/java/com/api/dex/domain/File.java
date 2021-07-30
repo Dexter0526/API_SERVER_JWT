@@ -32,12 +32,18 @@ public class File extends BaseEntity implements Serializable {
     @JoinColumn(name = "board_id")
     private Board fileBoard;
 
+    @ManyToOne
+    @JsonBackReference
+    @JoinColumn(name = "member_id")
+    private Member fileMember;
+
     @Builder
-    public File(String fileType, String originalName, String serverName, String path, Board board){
+    public File(String fileType, String originalName, String serverName, String path, Board board, Member member){
         this.fileType = fileType;
         this.originalName = originalName;
         this.serverName = serverName;
         this.path = path;
         this.fileBoard = board;
+        this.fileMember = member;
     }
 }

@@ -1,16 +1,14 @@
 package com.api.dex.controller;
 
-import com.api.dex.service.MemberService;
+import com.api.dex.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/members")
-public class MemberController {
+@RequestMapping("/files")
+public class FileController {
 
     @Autowired
-    private MemberService memberService;
-
-
+    private FileService fileService;
 }

@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/board")
+@RequestMapping("/boards")
 public class BoardController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -40,6 +40,16 @@ public class BoardController {
     @Autowired
     private FileService fileService;
 
+    @GetMapping("/")
+    public ResponseEntity getBoardPage(@RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "search", required = false) String search){
+
+        return null;
+    }
+
+    @GetMapping("/{category}")
+    public ResponseEntity getBoardPageByCategory(@PathVariable(value = "category") String category, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "search", required = false) String search){
+        return null;
+    }
 
     @PostMapping("/")
     public ResponseEntity insertBoard(@RequestBody BoardDto boardDto, Authentication authentication, @RequestParam("files") MultipartFile[] multipartFile) throws IOException {
@@ -60,5 +70,17 @@ public class BoardController {
 
         return new ResponseEntity(gson.toJson(items), HttpStatus.OK);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity updateBoard(@PathVariable("id") long id, @RequestBody BoardDto boardDto, Authentication authentication, @RequestParam("files") MultipartFile[] multipartFile){
+        return null;
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteBoard(@PathVariable("id") long id, Authentication authentication){
+        return null;
+    }
+
+
 
 }
