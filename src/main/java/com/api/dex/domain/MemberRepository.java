@@ -13,6 +13,8 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     Optional<Member> findByToken(String token);
 
+    Optional<Member> findByIdAndAccount(long id, String account);
+
     @Transactional
     Long deleteByAccount(String account);
 }

@@ -41,7 +41,9 @@ public class BoardController {
     private FileService fileService;
 
     @GetMapping("/")
-    public ResponseEntity getBoardPage(@RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "search", required = false) String search){
+    public ResponseEntity getBoardPage(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "search", required = false) String search){
+
+
 
         return null;
     }
@@ -52,7 +54,7 @@ public class BoardController {
     }
 
     @PostMapping("/")
-    public ResponseEntity insertBoard(@RequestBody BoardDto boardDto, Authentication authentication, @RequestParam("files") MultipartFile[] multipartFile) throws IOException {
+    public ResponseEntity insertBoard(BoardDto boardDto, Authentication authentication, @RequestParam("files") MultipartFile[] multipartFile) throws IOException {
         logger.info("Insert board controller:::" + boardDto.getTitle());
         Gson gson = new Gson();
         JsonObject items = new JsonObject();

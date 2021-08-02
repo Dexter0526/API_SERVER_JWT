@@ -1,15 +1,22 @@
 package com.api.dex.service;
 
+import com.api.dex.domain.File;
 import com.api.dex.domain.Member;
 import com.api.dex.domain.MemberRepository;
 import com.api.dex.domain.MemberRole;
+import com.api.dex.dto.FileDto;
 import com.api.dex.dto.MemberDto;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Iterator;
+import java.util.List;
 
 @Service
 @Transactional
@@ -44,9 +51,30 @@ public class MemberService {
         }
     }
 
-    public Member getMember(MemberDto memberDto){
+    public JsonObject getMember(long id, String account){
 
-        return null;
+        JsonObject jsonObject = new JsonObject();
+        Gson gson = new Gson();
+
+        Member member = memberRepository.findByIdAndAccount(id, account).orElseThrow(() -> new IllegalArgumentException("Not found"));
+        List<File> fileList = member.getFiles();
+
+        MemberDto memberDto = new MemberDto();
+        memberDto.setAccount(member.getAccount());
+        memberDto.setName(memberDto.getName());
+        jsonObject.add("member", gson.toJsonTree(memberDto));
+
+        if(fileList.size() > 0){
+            FileDto fileDto = new FileDto();
+            fileDto.setId(fileList.get(0).getId());
+            fileDto.setOriginalName(fileList.get(0).getOriginalName());
+            fileDto.setFileType(fileList.get(0).getFileType());
+            fileDto.setPath(fileList.get(0).getPath());
+            fileDto.setServerName(fileList.get(0).getServerName());
+            jsonObject.add("file", gson.toJsonTree(fileDto));
+        }
+
+        return jsonObject;
     }
 
     public Member updateMember(MemberDto memberDto, String account){
