@@ -54,19 +54,18 @@ public class BoardController {
     }
 
     @PostMapping("/")
-    public ResponseEntity insertBoard(BoardDto boardDto, Authentication authentication, @RequestParam("files") MultipartFile[] multipartFile) throws IOException {
+    public ResponseEntity insertBoard(BoardDto boardDto, Authentication authentication) throws IOException {
         logger.info("Insert board controller:::" + boardDto.getTitle());
         Gson gson = new Gson();
         JsonObject items = new JsonObject();
+        JsonObject data = new JsonObject();
 
         SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();
 
         boardDto = boardService.insertBoard(boardDto, securityUser.getMember().getAccount());
-        List<FileDto> fileDtoList = fileService.insertFileList(multipartFile, boardDto.getId());
 
-        boardDto.setFileDtos(fileDtoList);
-
-        items.add("items", gson.toJsonTree(boardDto));
+        data.add("board", gson.toJsonTree(boardDto));
+        items.add("items", data);
         items.addProperty("message", "success!");
 
 

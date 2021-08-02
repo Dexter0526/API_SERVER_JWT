@@ -3,6 +3,7 @@ package com.api.dex.service;
 import com.api.dex.domain.BoardRepository;
 import com.api.dex.domain.File;
 import com.api.dex.domain.FileRepository;
+import com.api.dex.domain.MemberRepository;
 import com.api.dex.dto.FileDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,15 +22,19 @@ import java.util.List;
 @Transactional
 public class FileService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static String path = "/home/ubuntu/files/";
 
     @Autowired
     private FileRepository fileRepository;
     @Autowired
     private BoardRepository boardRepository;
+    @Autowired
+    private MemberRepository memberRepository;
 
     public File save(FileDto fileDto){
         File file = File.builder()
                 .board(boardRepository.getById(fileDto.getBoardId()))
+                .member(memberRepository.getById(fileDto.getMemberId()))
                 .originalName(fileDto.getOriginalName())
                 .fileType(fileDto.getFileType())
                 .serverName(fileDto.getServerName())
@@ -52,7 +57,7 @@ public class FileService {
         for(int i = 0; i < multipartFiles.length; i++){
             FileDto fileDto = new FileDto();
 
-            java.io.File file = new java.io.File("/home/ubuntu/files/", (realTime+multipartFiles[i].getOriginalFilename()));
+            java.io.File file = new java.io.File(path, (realTime+multipartFiles[i].getOriginalFilename()));
             multipartFiles[i].transferTo(file);
 
             fileDto.setBoardId(boardId);
@@ -66,6 +71,27 @@ public class FileService {
         }
 
         return fileDtos;
+    }
+
+    public FileDto insertFile(MultipartFile multipartFiles, long memberId) throws IOException {
+        SimpleDateFormat timeFormat = new SimpleDateFormat("yyMMddHHmmss");
+        Date date = new Date();
+        String realTime = timeFormat.format(date);
+
+        FileDto fileDto = new FileDto();
+
+        java.io.File file = new java.io.File(path, (realTime+multipartFiles.getOriginalFilename()));
+        multipartFiles.transferTo(file);
+
+        fileDto.setMemberId(memberId);
+        fileDto.setOriginalName(multipartFiles.getOriginalFilename());
+        fileDto.setFileType(multipartFiles.getOriginalFilename().substring(multipartFiles.getOriginalFilename().lastIndexOf(".") + 1));
+        fileDto.setServerName(realTime+multipartFiles.getOriginalFilename());
+//            fileDto.setPath();
+        fileDto.setId(save(fileDto).getId());
+
+
+        return fileDto;
     }
 
 }
