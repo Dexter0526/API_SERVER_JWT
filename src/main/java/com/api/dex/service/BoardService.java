@@ -2,8 +2,12 @@ package com.api.dex.service;
 
 import com.api.dex.domain.Board;
 import com.api.dex.domain.BoardRepository;
+import com.api.dex.domain.File;
 import com.api.dex.domain.MemberRepository;
 import com.api.dex.dto.BoardDto;
+import com.api.dex.dto.FileDto;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,6 +91,39 @@ public class BoardService {
         result.put("page", page);
 
         return result;
+    }
+
+    public JsonObject getBoardById(Integer id){
+        JsonObject jsonObject = new JsonObject();
+        Gson gson = new Gson();
+        Board board = boardRepository.findById((int) id).orElseThrow(() -> new IllegalArgumentException("Not found"));
+
+        BoardDto boardDto = new BoardDto();
+        boardDto.setId(board.getId());
+        boardDto.setTitle(board.getTitle());
+        boardDto.setContent(board.getContent());
+        boardDto.setCategory(board.getCategory());
+        boardDto.setName(board.getBoardMember().getName());
+
+        List<File> fileList = board.getFiles();
+        Iterator<File> iterator = fileList.iterator();
+        List<FileDto> fileDtos = new ArrayList<>();
+
+        while (iterator.hasNext()){
+            File file = iterator.next();
+            FileDto fileDto = new FileDto();
+            fileDto.setFileType(file.getFileType());
+            fileDto.setPath(file.getPath());
+            fileDto.setServerName(file.getServerName());
+            fileDto.setOriginalName(file.getOriginalName());
+            fileDto.setId(file.getId());
+
+            fileDtos.add(fileDto);
+        }
+        boardDto.setFileDtos(fileDtos);
+        jsonObject.add("board", gson.toJsonTree(boardDto));
+
+        return jsonObject;
     }
 
     public void deleteBoard(long id, String account){

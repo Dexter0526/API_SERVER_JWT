@@ -48,6 +48,20 @@ public class BoardController {
         return null;
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity getBoardById(@PathVariable(value = "id") Integer id){
+        Gson gson = new Gson();
+        JsonObject items = new JsonObject();
+        if(id != null){
+            items.add("items", boardService.getBoardById(id));
+            items.addProperty("message", "success!");
+            return new ResponseEntity(gson.toJson(items), HttpStatus.OK);
+        }else{
+            items.addProperty("message", "Check board id!");
+            return new ResponseEntity(gson.toJson(items), HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @GetMapping("/{category}")
     public ResponseEntity getBoardPageByCategory(@PathVariable(value = "category") String category, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "search", required = false) String search){
         return null;
