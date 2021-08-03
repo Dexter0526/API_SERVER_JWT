@@ -10,6 +10,6 @@ public class FileDto {
     private String originalName;
     private String serverName;
     private String path;
-    private long boardId;
-    private long memberId;
+    private Integer boardId;
+    private Integer memberId;
 }

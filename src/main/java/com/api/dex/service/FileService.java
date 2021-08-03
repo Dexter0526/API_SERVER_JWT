@@ -33,8 +33,8 @@ public class FileService {
 
     public File save(FileDto fileDto){
         File file = File.builder()
-                .board(boardRepository.getById(fileDto.getBoardId()))
-                .member(memberRepository.getById(fileDto.getMemberId()))
+                .board(boardRepository.findById(fileDto.getBoardId()))
+                .member(memberRepository.findById(fileDto.getMemberId()))
                 .originalName(fileDto.getOriginalName())
                 .fileType(fileDto.getFileType())
                 .serverName(fileDto.getServerName())
@@ -60,7 +60,7 @@ public class FileService {
             java.io.File file = new java.io.File(path, (realTime+multipartFiles[i].getOriginalFilename()));
             multipartFiles[i].transferTo(file);
 
-            fileDto.setBoardId(boardId);
+            fileDto.setBoardId((int) boardId);
             fileDto.setOriginalName(multipartFiles[i].getOriginalFilename());
             fileDto.setFileType(multipartFiles[i].getOriginalFilename().substring(multipartFiles[i].getOriginalFilename().lastIndexOf(".") + 1));
             fileDto.setServerName(realTime+multipartFiles[i].getOriginalFilename());
@@ -83,7 +83,7 @@ public class FileService {
         java.io.File file = new java.io.File(path, (realTime+multipartFiles.getOriginalFilename()));
         multipartFiles.transferTo(file);
 
-        fileDto.setMemberId(memberId);
+        fileDto.setMemberId((int) memberId);
         fileDto.setOriginalName(multipartFiles.getOriginalFilename());
         fileDto.setFileType(multipartFiles.getOriginalFilename().substring(multipartFiles.getOriginalFilename().lastIndexOf(".") + 1));
         fileDto.setServerName(realTime+multipartFiles.getOriginalFilename());
