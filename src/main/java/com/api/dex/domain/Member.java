@@ -28,6 +28,9 @@ public class Member extends BaseEntity implements Serializable  {
     @Column(length = 100)
     private String name;
 
+    @Column(length = 500)
+    private String info;
+
     @Column(length = 1000)
     private String token;
 
@@ -40,11 +43,12 @@ public class Member extends BaseEntity implements Serializable  {
     private List<File> files;
 
     @Builder
-    public Member(MemberRole memberRole, String account, String password, String name, String token) {
+    public Member(MemberRole memberRole, String account, String password, String name, String info, String token) {
         this.memberRole = memberRole;
         this.account = account;
         this.password = password;
         this.name = name;
+        this.info = info;
         this.token = token;
 
     }

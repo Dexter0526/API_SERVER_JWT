@@ -86,6 +86,7 @@ public class AuthController {
         httpHeaders.add("refreshToken", refreshToken);
 
         data.addProperty("account", member.getAccount());
+        data.addProperty("info", member.getInfo());
         data.addProperty("name", member.getName());
         items.add("items", data);
 
@@ -93,19 +94,26 @@ public class AuthController {
     }
 
     @PutMapping("/{account}")
-    public ResponseEntity updateMember(@RequestBody MemberDto memberDto, @PathVariable String account){
+    public ResponseEntity updateMember(@RequestBody MemberDto memberDto, @PathVariable String account, Authentication authentication){
+        SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();
         Gson gson = new Gson();
         HttpHeaders httpHeaders = new HttpHeaders();
         JsonObject items = new JsonObject();
         JsonObject data = new JsonObject();
+        if(securityUser.getMember().getAccount().contains(account)){
+            Member member = memberService.updateMember(memberDto, account);
 
-        Member member = memberService.updateMember(memberDto, account);
+            data.addProperty("account", member.getAccount());
+            data.addProperty("info", member.getInfo());
+            data.addProperty("name", member.getName());
+            items.add("items", data);
 
-        data.addProperty("account", member.getAccount());
-        data.addProperty("name", member.getName());
-        items.add("items", data);
-
-        return new ResponseEntity(gson.toJson(items), httpHeaders, HttpStatus.OK);
+            return new ResponseEntity(gson.toJson(items), httpHeaders, HttpStatus.OK);
+        }else{
+            data.addProperty("message", "Check your account");
+            items.add("items", data);
+            return new ResponseEntity(gson.toJson(items), httpHeaders, HttpStatus.FORBIDDEN);
+        }
 
     }
 
@@ -117,7 +125,7 @@ public class AuthController {
 
         SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();
 
-        if(account.equals(securityUser.getMember().getAccount())){
+        if(securityUser.getMember().getAccount().contains(account)){
             memberService.deleteMember(securityUser.getMember().getAccount());
 
             data.addProperty("account", securityUser.getMember().getAccount());

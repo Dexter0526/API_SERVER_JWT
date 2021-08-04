@@ -34,6 +34,7 @@ public class MemberService {
                 .account(memberDto.getAccount())
                 .password(passwordEncoder.encode(memberDto.getPassword()))
                 .name(memberDto.getName())
+                .info(memberDto.getInfo())
                 .token(memberDto.getToken())
                 .memberRole(memberDto.getMemberRole())
                 .build();
@@ -51,15 +52,16 @@ public class MemberService {
         }
     }
 
-    public JsonObject getMember(long id, String account){
+    public JsonObject getMember(long id){
 
         JsonObject jsonObject = new JsonObject();
         Gson gson = new Gson();
 
-        Member member = memberRepository.findByIdAndAccount(id, account).orElseThrow(() -> new IllegalArgumentException("Not found"));
+        Member member = memberRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Not found"));
         List<File> fileList = member.getFiles();
 
         MemberDto memberDto = new MemberDto();
+        memberDto.setInfo(member.getInfo());
         memberDto.setAccount(member.getAccount());
         memberDto.setName(memberDto.getName());
         jsonObject.add("member", gson.toJsonTree(memberDto));
@@ -81,6 +83,7 @@ public class MemberService {
         Member member = memberRepository.findByAccount(account)
                 .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 E-MAIL 입니다."));
 
+        member.setInfo(memberDto.getInfo());
         member.setPassword(passwordEncoder.encode(memberDto.getPassword()));
         member.setName(memberDto.getName());
 

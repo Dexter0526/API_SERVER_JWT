@@ -13,6 +13,7 @@ public class MemberDto {
     private String password;
     private String name;
     private String token;
+    private String info;
     private MemberRole memberRole;
 
 }

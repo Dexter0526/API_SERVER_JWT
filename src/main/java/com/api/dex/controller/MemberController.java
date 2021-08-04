@@ -19,14 +19,12 @@ public class MemberController {
     private MemberService memberService;
 
     @GetMapping("/{id}")
-    public ResponseEntity getMemberInfo(@PathVariable(value = "id") Integer id, Authentication authentication){
+    public ResponseEntity getMemberInfo(@PathVariable(value = "id") Integer id){
         JsonObject jsonObject = new JsonObject();
         Gson gson = new Gson();
 
-        SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();
-
-        if(id != null && securityUser != null){
-            jsonObject.add("items", memberService.getMember(id, securityUser.getMember().getAccount()));
+        if(id != null){
+            jsonObject.add("items", memberService.getMember(id));
             jsonObject.addProperty("message", "success!!");
             return new ResponseEntity<>(gson.toJson(jsonObject), HttpStatus.OK);
         }else{
