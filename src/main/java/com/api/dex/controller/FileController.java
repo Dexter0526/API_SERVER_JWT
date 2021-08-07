@@ -1,6 +1,7 @@
 package com.api.dex.controller;
 
 import com.api.dex.domain.File;
+import com.api.dex.domain.SecurityUser;
 import com.api.dex.dto.FileDto;
 import com.api.dex.service.FileService;
 import com.google.gson.Gson;
@@ -9,6 +10,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -49,7 +51,7 @@ public class FileController {
     }
 
     @PostMapping("/boards")
-    public ResponseEntity insertBoardFile(@RequestParam(value = "id") long boardId, @RequestParam(value = "files") MultipartFile[] multipartFiles) throws IOException {
+    public ResponseEntity insertBoardFile(@RequestParam(value = "id") long boardId, @RequestParam(value = "files") MultipartFile[] multipartFiles, Authentication authentication) throws IOException {
         Gson gson = new Gson();
         JsonObject items = new JsonObject();
         JsonObject data = new JsonObject();
@@ -64,19 +66,27 @@ public class FileController {
         return new ResponseEntity<>(gson.toJson(items), HttpStatus.CREATED);
     }
 
-    @PostMapping("/members")
-    public ResponseEntity insertMemberFile(@RequestParam(value = "id") long memberId, @RequestParam(value = "file") MultipartFile multipartFile) throws IOException {
+    @PostMapping("/members/{account}")
+    public ResponseEntity insertMemberFile(@PathVariable(value = "account") String account, @RequestParam(value = "file") MultipartFile multipartFile, Authentication authentication) throws IOException {
         Gson gson = new Gson();
         JsonObject items = new JsonObject();
         JsonObject data = new JsonObject();
+        SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();
 
-        FileDto fileDto = fileService.insertFile(multipartFile, memberId);
+        if(securityUser.getMember().getAccount().contains(account)){
+            FileDto fileDto = fileService.insertFile(multipartFile, securityUser.getMember().getAccount());
 
-        data.add("file", gson.toJsonTree(fileDto));
-        items.add("items", data);
-        items.addProperty("message", "success!");
+            data.add("file", gson.toJsonTree(fileDto));
+            items.add("items", data);
+            items.addProperty("message", "success!");
 
-        return new ResponseEntity<>(gson.toJson(items), HttpStatus.CREATED);
+            return new ResponseEntity<>(gson.toJson(items), HttpStatus.CREATED);
+        }else{
+            items.addProperty("message", "FORBIDDEN!");
+            return new ResponseEntity<>(gson.toJson(items), HttpStatus.FORBIDDEN);
+        }
+
+
     }
 
 

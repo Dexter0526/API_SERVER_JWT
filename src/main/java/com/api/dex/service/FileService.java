@@ -34,7 +34,7 @@ public class FileService {
     public File save(FileDto fileDto){
         File file = File.builder()
                 .board(boardRepository.findById(fileDto.getBoardId()))
-                .member(memberRepository.findById(fileDto.getMemberId()))
+                .member(memberRepository.findByAccount(fileDto.getAccount()).orElseThrow(() -> new IllegalArgumentException("Not found account")))
                 .originalName(fileDto.getOriginalName())
                 .fileType(fileDto.getFileType())
                 .serverName(fileDto.getServerName())
@@ -73,7 +73,7 @@ public class FileService {
         return fileDtos;
     }
 
-    public FileDto insertFile(MultipartFile multipartFiles, long memberId) throws IOException {
+    public FileDto insertFile(MultipartFile multipartFiles, String account) throws IOException {
         SimpleDateFormat timeFormat = new SimpleDateFormat("yyMMddHHmmss");
         Date date = new Date();
         String realTime = timeFormat.format(date);
@@ -83,7 +83,7 @@ public class FileService {
         java.io.File file = new java.io.File(path, (realTime+multipartFiles.getOriginalFilename()));
         multipartFiles.transferTo(file);
 
-        fileDto.setMemberId((int) memberId);
+        fileDto.setAccount(account);
         fileDto.setOriginalName(multipartFiles.getOriginalFilename());
         fileDto.setFileType(multipartFiles.getOriginalFilename().substring(multipartFiles.getOriginalFilename().lastIndexOf(".") + 1));
         fileDto.setServerName(realTime+multipartFiles.getOriginalFilename());

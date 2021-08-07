@@ -101,8 +101,9 @@ public class AuthController {
         JsonObject items = new JsonObject();
         JsonObject data = new JsonObject();
         if(securityUser.getMember().getAccount().contains(account)){
-            Member member = memberService.updateMember(memberDto, account);
+            Member member = memberService.updateMember(memberDto, securityUser.getMember().getAccount());
 
+            data.addProperty("id", member.getId());
             data.addProperty("account", member.getAccount());
             data.addProperty("info", member.getInfo());
             data.addProperty("name", member.getName());

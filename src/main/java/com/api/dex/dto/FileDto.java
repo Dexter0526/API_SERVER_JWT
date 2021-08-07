@@ -11,5 +11,5 @@ public class FileDto {
     private String serverName;
     private String path;
     private Integer boardId;
-    private Integer memberId;
+    private String account;
 }

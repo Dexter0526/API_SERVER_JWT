@@ -68,7 +68,7 @@ public class BoardController {
     }
 
     @PostMapping("/")
-    public ResponseEntity insertBoard(BoardDto boardDto, Authentication authentication) throws IOException {
+    public ResponseEntity insertBoard(@RequestBody BoardDto boardDto, Authentication authentication) throws IOException {
         logger.info("Insert board controller:::" + boardDto.getTitle());
         Gson gson = new Gson();
         JsonObject items = new JsonObject();
@@ -76,7 +76,7 @@ public class BoardController {
 
         SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();
 
-        boardDto = boardService.insertBoard(boardDto, securityUser.getMember().getAccount());
+        boardService.insertBoard(boardDto, securityUser.getMember().getAccount());
 
         data.add("board", gson.toJsonTree(boardDto));
         items.add("items", data);

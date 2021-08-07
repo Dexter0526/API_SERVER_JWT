@@ -34,10 +34,10 @@ public class MemberController {
 
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity updateMemberInfo(@PathVariable(value = "id") Integer id, Authentication authentication, MemberDto memberDto){
-
-
-        return null;
-    }
+//    @PutMapping("/{id}")
+//    public ResponseEntity updateMemberInfo(@PathVariable(value = "id") Integer id, Authentication authentication, MemberDto memberDto){
+//
+//
+//        return null;
+//    }
 }
