@@ -53,7 +53,7 @@ public class BoardController {
         Gson gson = new Gson();
         JsonObject items = new JsonObject();
         if(id != null){
-            items.add("items", boardService.getBoardById(id));
+            items.addProperty("items", gson.toJson(boardService.getBoardById(id)));
             items.addProperty("message", "success!");
             return new ResponseEntity(gson.toJson(items), HttpStatus.OK);
         }else{

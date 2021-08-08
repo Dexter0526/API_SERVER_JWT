@@ -85,6 +85,7 @@ public class AuthController {
         httpHeaders.add("accessToken", accessToken);
         httpHeaders.add("refreshToken", refreshToken);
 
+        data.addProperty("id", member.getId());
         data.addProperty("account", member.getAccount());
         data.addProperty("info", member.getInfo());
         data.addProperty("name", member.getName());

@@ -8,6 +8,8 @@ import com.api.dex.dto.FileDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -90,6 +92,25 @@ public class FileService {
 //            fileDto.setPath();
         fileDto.setId(save(fileDto).getId());
 
+
+        return fileDto;
+    }
+
+    public FileDto getFileByMember(long memberId, String account, int page){
+        Page<File> files = null;
+
+        if(account != null){
+            files = fileRepository.findByFileMember_Account(account, PageRequest.of(page, 1));
+        }else{
+            files = fileRepository.findByFileMember_Id(memberId, PageRequest.of(page, 1));
+        }
+
+        FileDto fileDto = new FileDto();
+        fileDto.setId(files.getContent().get(0).getId());
+        fileDto.setOriginalName(files.getContent().get(0).getOriginalName());
+        fileDto.setFileType(files.getContent().get(0).getFileType());
+        fileDto.setPath(files.getContent().get(0).getPath());
+        fileDto.setServerName(files.getContent().get(0).getServerName());
 
         return fileDto;
     }

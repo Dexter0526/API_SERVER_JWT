@@ -93,9 +93,8 @@ public class BoardService {
         return result;
     }
 
-    public JsonObject getBoardById(Integer id){
-        JsonObject jsonObject = new JsonObject();
-        Gson gson = new Gson();
+    public Map<String, Object> getBoardById(Integer id){
+        Map<String, Object> result = new LinkedHashMap<>();
         Board board = boardRepository.findById((int) id).orElseThrow(() -> new IllegalArgumentException("Not found"));
 
         BoardDto boardDto = new BoardDto();
@@ -121,9 +120,9 @@ public class BoardService {
             fileDtos.add(fileDto);
         }
         boardDto.setFileDtos(fileDtos);
-        jsonObject.add("board", gson.toJsonTree(boardDto));
+        result.put("board", boardDto);
 
-        return jsonObject;
+        return result;
     }
 
     public void deleteBoard(long id, String account){

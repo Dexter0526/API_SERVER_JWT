@@ -1,7 +1,9 @@
 package com.api.dex.controller;
 
 import com.api.dex.domain.SecurityUser;
+import com.api.dex.dto.FileDto;
 import com.api.dex.dto.MemberDto;
+import com.api.dex.service.FileService;
 import com.api.dex.service.MemberService;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -18,14 +20,24 @@ public class MemberController {
     @Autowired
     private MemberService memberService;
 
+    @Autowired
+    private FileService fileService;
+
     @GetMapping("/{id}")
     public ResponseEntity getMemberInfo(@PathVariable(value = "id") Integer id){
         JsonObject jsonObject = new JsonObject();
+        JsonObject dtoObject = new JsonObject();
         Gson gson = new Gson();
 
         if(id != null){
-            jsonObject.add("items", memberService.getMember(id));
+            MemberDto memberDto = memberService.getMember(id);
+            FileDto fileDto = fileService.getFileByMember(id,memberDto.getAccount(), 0);
+
+            dtoObject.add("member", gson.toJsonTree(memberDto));
+            dtoObject.add("file", gson.toJsonTree(fileDto));
+            jsonObject.add("items", dtoObject);
             jsonObject.addProperty("message", "success!!");
+
             return new ResponseEntity<>(gson.toJson(jsonObject), HttpStatus.OK);
         }else{
             jsonObject.addProperty("message", "Not found!");
