@@ -38,7 +38,7 @@ public class ServletContextListenerImpl implements ServletContextListener {
         autowireCapableBeanFactory.autowireBean(this);
 
         if(memberRepository.count() == 0){
-            Member member = new Member(new MemberRole(MemberRole.RoleType.ROLE_ADMIN),"dexter", passwordEncoder.encode("0526"), "박정수", null);
+            Member member = new Member(new MemberRole(MemberRole.RoleType.ROLE_ADMIN),"dexter", passwordEncoder.encode("0526"), "박정수", null, null);
             memberRepository.save(member);
         }
     }
