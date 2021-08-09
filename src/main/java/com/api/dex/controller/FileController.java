@@ -66,8 +66,8 @@ public class FileController {
         return new ResponseEntity<>(gson.toJson(items), HttpStatus.CREATED);
     }
 
-    @PostMapping("/members/{account}")
-    public ResponseEntity insertMemberFile(@PathVariable(value = "account") String account, @RequestParam(value = "file") MultipartFile multipartFile, Authentication authentication) throws IOException {
+    @PostMapping("/members")
+    public ResponseEntity insertMemberFile(@RequestParam(value = "account") String account, @RequestParam(value = "file") MultipartFile multipartFile, Authentication authentication) throws IOException {
         Gson gson = new Gson();
         JsonObject items = new JsonObject();
         JsonObject data = new JsonObject();
