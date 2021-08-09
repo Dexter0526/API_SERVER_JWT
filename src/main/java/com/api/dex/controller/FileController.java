@@ -26,6 +26,8 @@ public class FileController {
     @Autowired
     private FileService fileService;
 
+    private final static String src = "https://vlaos-smartwork.com/api/files/";
+
     @GetMapping("/{id}")
     public void getFile(HttpServletResponse response, @PathVariable(value = "id") Integer id) throws IOException {
         File file = fileService.getFileById(id);
@@ -48,6 +50,12 @@ public class FileController {
 
         }
 
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteFile(@PathVariable(value = "id")Integer id, Authentication authentication){
+        SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();
+        fileService.deleteFile(id, securityUser.getMember().getAccount());
     }
 
     @PostMapping("/boards")
@@ -85,9 +93,21 @@ public class FileController {
             items.addProperty("message", "FORBIDDEN!");
             return new ResponseEntity<>(gson.toJson(items), HttpStatus.FORBIDDEN);
         }
-
-
     }
 
+    @GetMapping("/members/{memberId}")
+    public ResponseEntity getMemberFile(@PathVariable(value = "memberId") Integer memberId){
+        FileDto fileDto = fileService.getFileByMember(memberId, null, 0);
+        Gson gson = new Gson();
+        JsonObject items = new JsonObject();
+        JsonObject data = new JsonObject();
+
+        data.add("file", gson.toJsonTree(fileDto));
+        data.addProperty("src", src + fileDto.getId());
+        items.add("items", data);
+        items.addProperty("message", "success!");
+
+        return new ResponseEntity<>(gson.toJson(items), HttpStatus.OK);
+    }
 
 }

@@ -115,4 +115,31 @@ public class FileService {
         return fileDto;
     }
 
+    public FileDto updateFile(MultipartFile multipartFiles, long memberId) throws IOException {
+        SimpleDateFormat timeFormat = new SimpleDateFormat("yyMMddHHmmss");
+        Date date = new Date();
+        String realTime = timeFormat.format(date);
+
+        FileDto fileDto = new FileDto();
+
+        java.io.File file = new java.io.File(path, (realTime+multipartFiles.getOriginalFilename()));
+        multipartFiles.transferTo(file);
+
+        fileDto.setOriginalName(multipartFiles.getOriginalFilename());
+        fileDto.setFileType(multipartFiles.getOriginalFilename().substring(multipartFiles.getOriginalFilename().lastIndexOf(".") + 1));
+        fileDto.setServerName(realTime+multipartFiles.getOriginalFilename());
+//            fileDto.setPath();
+        fileDto.setId(save(fileDto).getId());
+
+
+        return fileDto;
+    }
+
+    public void deleteFile(Integer id, String account){
+        File file = fileRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("File is not found"));
+        if(file.getFileBoard().getBoardMember().getAccount().equals(account) || file.getFileMember().getAccount().equals(account)){
+            fileRepository.delete(file);
+        }
+    }
+
 }
