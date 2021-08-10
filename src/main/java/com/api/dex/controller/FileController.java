@@ -59,7 +59,7 @@ public class FileController {
     }
 
     @PostMapping("/boards")
-    public ResponseEntity insertBoardFile(@RequestParam(value = "id") long boardId, @RequestParam(value = "files") MultipartFile[] multipartFiles, Authentication authentication) throws IOException {
+    public ResponseEntity insertBoardFile(@RequestParam(value = "boardId") Integer boardId, @RequestParam(value = "files") MultipartFile[] multipartFiles, Authentication authentication) throws IOException {
         Gson gson = new Gson();
         JsonObject items = new JsonObject();
         JsonObject data = new JsonObject();

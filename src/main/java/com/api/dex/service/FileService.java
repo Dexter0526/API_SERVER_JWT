@@ -50,7 +50,7 @@ public class FileService {
         return fileRepository.getById(id);
     }
 
-    public List<FileDto> insertFileList(MultipartFile[] multipartFiles, long boardId) throws IOException {
+    public List<FileDto> insertFileList(MultipartFile[] multipartFiles, int boardId) throws IOException {
         List<FileDto> fileDtos = new ArrayList<>();
         SimpleDateFormat timeFormat = new SimpleDateFormat("yyMMddHHmmss");
         Date date = new Date();
@@ -62,7 +62,7 @@ public class FileService {
             java.io.File file = new java.io.File(path, (realTime+multipartFiles[i].getOriginalFilename()));
             multipartFiles[i].transferTo(file);
 
-            fileDto.setBoardId((int) boardId);
+            fileDto.setBoardId(boardId);
             fileDto.setOriginalName(multipartFiles[i].getOriginalFilename());
             fileDto.setFileType(multipartFiles[i].getOriginalFilename().substring(multipartFiles[i].getOriginalFilename().lastIndexOf(".") + 1));
             fileDto.setServerName(realTime+multipartFiles[i].getOriginalFilename());
@@ -128,7 +128,7 @@ public class FileService {
         fileDto.setOriginalName(multipartFiles.getOriginalFilename());
         fileDto.setFileType(multipartFiles.getOriginalFilename().substring(multipartFiles.getOriginalFilename().lastIndexOf(".") + 1));
         fileDto.setServerName(realTime+multipartFiles.getOriginalFilename());
-//            fileDto.setPath();
+        fileDto.setPath(path);
         fileDto.setId(save(fileDto).getId());
 
 
