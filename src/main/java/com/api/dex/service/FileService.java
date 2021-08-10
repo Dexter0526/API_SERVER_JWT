@@ -66,7 +66,7 @@ public class FileService {
             fileDto.setOriginalName(multipartFiles[i].getOriginalFilename());
             fileDto.setFileType(multipartFiles[i].getOriginalFilename().substring(multipartFiles[i].getOriginalFilename().lastIndexOf(".") + 1));
             fileDto.setServerName(realTime+multipartFiles[i].getOriginalFilename());
-//            fileDto.setPath();
+            fileDto.setPath(path);
             fileDto.setId(save(fileDto).getId());
 
             fileDtos.add(fileDto);
@@ -89,7 +89,7 @@ public class FileService {
         fileDto.setOriginalName(multipartFiles.getOriginalFilename());
         fileDto.setFileType(multipartFiles.getOriginalFilename().substring(multipartFiles.getOriginalFilename().lastIndexOf(".") + 1));
         fileDto.setServerName(realTime+multipartFiles.getOriginalFilename());
-//            fileDto.setPath();
+        fileDto.setPath(path);
         fileDto.setId(save(fileDto).getId());
 
 
