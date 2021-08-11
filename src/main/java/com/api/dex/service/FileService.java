@@ -36,7 +36,7 @@ public class FileService {
     public File save(FileDto fileDto){
         File file = File.builder()
                 .board(boardRepository.findById(fileDto.getBoardId()))
-                .member(memberRepository.findByAccount(fileDto.getAccount()).orElseThrow(() -> new IllegalArgumentException("Not found account")))
+                .member(memberRepository.findByAccount(fileDto.getAccount()).orElseGet(() -> null))
                 .originalName(fileDto.getOriginalName())
                 .fileType(fileDto.getFileType())
                 .serverName(fileDto.getServerName())
@@ -50,7 +50,7 @@ public class FileService {
         return fileRepository.getById(id);
     }
 
-    public List<FileDto> insertFileList(MultipartFile[] multipartFiles, int boardId) throws IOException {
+    public List<FileDto> insertFileList(MultipartFile[] multipartFiles, Integer boardId) throws IOException {
         List<FileDto> fileDtos = new ArrayList<>();
         SimpleDateFormat timeFormat = new SimpleDateFormat("yyMMddHHmmss");
         Date date = new Date();

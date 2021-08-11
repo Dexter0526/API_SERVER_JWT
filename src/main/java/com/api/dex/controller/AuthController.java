@@ -183,7 +183,9 @@ public class AuthController {
             String account = securityUser.getMember().getAccount();
             String name = securityUser.getUsername();
             String role = securityUser.getMember().getMemberRole().getRoleName().name();
+            Long id = securityUser.getMember().getId();
 
+            data.addProperty("id", id);
             data.addProperty("account", account);
             data.addProperty("name", name);
             data.addProperty("role", role);

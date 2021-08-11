@@ -108,11 +108,6 @@ public class JwtTokenProvider {
         }
     }
     public Member validateRefreshToken(String refreshToken) {
-        Member member = memberRepository.findByToken(refreshToken).get();
-        if (member != null) {
-            return member;
-        } else {
-            return null;
-        }
+        return memberRepository.findByToken(refreshToken).orElseThrow(() -> new IllegalArgumentException("Refresh Token is not validated"));
     }
 }

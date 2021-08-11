@@ -42,18 +42,18 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             httpServletResponse.setHeader("X-AUTH-TOKEN", token);
         }else if(refreshToken != null && jwtTokenProvider.validateToken(refreshToken)){
             Member member = jwtTokenProvider.validateRefreshToken(refreshToken);
-            if(member != null){
-                String accessToken = jwtTokenProvider.createToken(member.getAccount(), member.getMemberRole(), tokenValidTime);
-                // 토큰이 유효하면 토큰으로부터 유저 정보를 받아옵니다.
-                Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
-                // SecurityContext 에 Authentication 객체를 저장합니다.
-//            SecurityContextHolder.getContext().setAuthentication(authentication);
-                SecurityContext context = SecurityContextHolder.getContext();
-                context.setAuthentication(authentication);
-                logger.info("doFilter authentication === " + authentication.getName());
 
-                httpServletResponse.setHeader("X-AUTH-TOKEN", accessToken);
-            }
+            String accessToken = jwtTokenProvider.createToken(member.getAccount(), member.getMemberRole(), tokenValidTime);
+            // 토큰이 유효하면 토큰으로부터 유저 정보를 받아옵니다.
+            Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
+            // SecurityContext 에 Authentication 객체를 저장합니다.
+//            SecurityContextHolder.getContext().setAuthentication(authentication);
+            SecurityContext context = SecurityContextHolder.getContext();
+            context.setAuthentication(authentication);
+            logger.info("doFilter authentication === " + authentication.getName());
+
+            httpServletResponse.setHeader("X-AUTH-TOKEN", accessToken);
+
         }else if(token != null && refreshToken == null){
             ((HttpServletResponse) response).setStatus(401);
             return;
