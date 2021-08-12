@@ -47,7 +47,7 @@ public class FileService {
     }
 
     public File getFileById(long id){
-        return fileRepository.getById(id);
+        return fileRepository.findById((int) id);
     }
 
     public List<FileDto> insertFileList(MultipartFile[] multipartFiles, Integer boardId) throws IOException {
@@ -136,7 +136,7 @@ public class FileService {
     }
 
     public void deleteFile(Integer id, String account){
-        File file = fileRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("File is not found"));
+        File file = fileRepository.findById(id);
         if(file.getFileBoard().getBoardMember().getAccount().equals(account) || file.getFileMember().getAccount().equals(account)){
             fileRepository.delete(file);
         }

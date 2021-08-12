@@ -10,7 +10,9 @@ import java.util.Optional;
 @Repository
 public interface FileRepository extends JpaRepository<File, Long> {
 
-    Optional<File> findById(long id);
+//    Optional<File> findById(long id);
+
+    File findById(Integer id);
 
     Page<File> findByFileMember_Account(String account, Pageable pageable);
 
