@@ -25,6 +25,7 @@ import java.util.List;
 public class FileService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private static String path = "/home/ubuntu/files/";
+//    private static String path = "E://temp/files/";
 
     @Autowired
     private FileRepository fileRepository;
