@@ -68,7 +68,7 @@ public class MemberService {
         MemberDto memberDto = new MemberDto();
         memberDto.setInfo(member.getInfo());
         memberDto.setAccount(member.getAccount());
-        memberDto.setName(memberDto.getName());
+        memberDto.setName(member.getName());
 //        jsonObject.add("member", gson.toJsonTree(memberDto));
 //
 //        FileDto fileDto = new FileDto();
