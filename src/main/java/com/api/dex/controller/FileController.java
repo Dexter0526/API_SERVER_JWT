@@ -31,7 +31,7 @@ public class FileController {
     private final static String src = "https://vlaos-smartwork.com/api/files/";
 
     @GetMapping("/{id}")
-    public @ResponseBody byte[] getFile(HttpServletResponse response, @PathVariable(value = "id") Integer id) throws IOException {
+    public @ResponseBody byte[] getFile(HttpServletResponse response, @PathVariable(value = "id") Long id) throws IOException {
         File file = fileService.getFileById(id);
 
 //        if(file.getOriginalName() != null){
@@ -58,7 +58,7 @@ public class FileController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteFile(@PathVariable(value = "id")Integer id, Authentication authentication){
+    public void deleteFile(@PathVariable(value = "id") Long id, Authentication authentication){
         SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();
         fileService.deleteFile(id, securityUser.getMember().getAccount());
     }
