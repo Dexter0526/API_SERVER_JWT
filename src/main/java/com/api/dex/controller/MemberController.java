@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/members")
 public class MemberController {
+    private final static String src = "https://vlaos-smartwork.com/api/files/";
 
     @Autowired
     private MemberService memberService;
@@ -35,6 +36,7 @@ public class MemberController {
 
             dtoObject.add("member", gson.toJsonTree(memberDto));
             dtoObject.add("file", gson.toJsonTree(fileDto));
+            dtoObject.addProperty("src", src + fileDto.getId());
             jsonObject.add("items", dtoObject);
             jsonObject.addProperty("message", "success!!");
 

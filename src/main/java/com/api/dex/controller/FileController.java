@@ -7,6 +7,7 @@ import com.api.dex.service.FileService;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLEncoder;
 import java.util.List;
 
@@ -29,26 +31,29 @@ public class FileController {
     private final static String src = "https://vlaos-smartwork.com/api/files/";
 
     @GetMapping("/{id}")
-    public void getFile(HttpServletResponse response, @PathVariable(value = "id") Integer id) throws IOException {
+    public @ResponseBody byte[] getFile(HttpServletResponse response, @PathVariable(value = "id") Integer id) throws IOException {
         File file = fileService.getFileById(id);
 
-        if(file.getOriginalName() != null){
-            String extension = FilenameUtils.getExtension(file.getOriginalName());
-
-            byte[] files = org.apache.commons.io.FileUtils.readFileToByteArray(new java.io.File(file.getPath() + file.getServerName()));
-
-            if(extension.equals("pdf")) response.setContentType("application/pdf");
-            else response.setContentType("image/png");
-
-            response.setContentLength(files.length);
-            response.setHeader("Content-Disposition", "inline; fileName=\"" + URLEncoder.encode(file.getOriginalName(),"UTF-8")+"\";");
-            response.setHeader("Content-Transfer-Encoding", "binary");
-
-            response.getOutputStream().write(files);
-            response.getOutputStream().flush();
-            response.getOutputStream().close();
-
-        }
+//        if(file.getOriginalName() != null){
+//            String extension = FilenameUtils.getExtension(file.getOriginalName());
+//
+//            byte[] files = org.apache.commons.io.FileUtils.readFileToByteArray(new java.io.File(file.getPath() + file.getServerName()));
+//
+//            if(extension.equals("pdf")) response.setContentType("application/pdf");
+//            else response.setContentType("image/png");
+//
+//            response.setContentLength(files.length);
+//            response.setHeader("Content-Disposition", "inline; fileName=\"" + URLEncoder.encode(file.getOriginalName(),"UTF-8")+"\";");
+//            response.setHeader("Content-Transfer-Encoding", "binary");
+//
+//            response.getOutputStream().write(files);
+//            response.getOutputStream().flush();
+//            response.getOutputStream().close();
+//
+//        }
+        InputStream in = getClass()
+                .getResourceAsStream(file.getPath() + file.getServerName());
+        return IOUtils.toByteArray(in);
 
     }
 
