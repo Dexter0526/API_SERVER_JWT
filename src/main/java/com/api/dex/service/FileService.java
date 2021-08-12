@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -101,9 +102,9 @@ public class FileService {
         Page<File> files = null;
 
         if(account != null){
-            files = fileRepository.findByFileMember_Account(account, PageRequest.of(page, 1));
+            files = fileRepository.findByFileMember_Account(account, PageRequest.of(page, 1, Sort.by(Sort.Direction.DESC, "id")));
         }else{
-            files = fileRepository.findByFileMember_Id(memberId, PageRequest.of(page, 1));
+            files = fileRepository.findByFileMember_Id(memberId, PageRequest.of(page, 1, Sort.by(Sort.Direction.DESC, "id")));
         }
 
         FileDto fileDto = new FileDto();
