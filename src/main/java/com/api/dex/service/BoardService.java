@@ -22,6 +22,7 @@ import java.util.*;
 @Transactional
 public class BoardService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final static String src = "https://vlaos-smartwork.com/api/files/";
 
     @Autowired
     private BoardRepository boardRepository;
@@ -107,6 +108,8 @@ public class BoardService {
         List<File> fileList = board.getFiles();
         Iterator<File> iterator = fileList.iterator();
         List<FileDto> fileDtos = new ArrayList<>();
+        List<String> srcs = new LinkedList<>();
+
 
         while (iterator.hasNext()){
             File file = iterator.next();
@@ -117,10 +120,13 @@ public class BoardService {
             fileDto.setOriginalName(file.getOriginalName());
             fileDto.setId(file.getId());
 
+            srcs.add(src + fileDto.getId());
+
             fileDtos.add(fileDto);
         }
         boardDto.setFileDtos(fileDtos);
         result.put("board", boardDto);
+        result.put("files", srcs);
 
         return result;
     }
