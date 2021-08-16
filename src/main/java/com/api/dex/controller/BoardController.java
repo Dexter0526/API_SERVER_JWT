@@ -42,10 +42,15 @@ public class BoardController {
 
     @GetMapping("/")
     public ResponseEntity getBoardPage(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "search", required = false) String search){
+        Gson gson = new Gson();
+        JsonObject items = new JsonObject();
 
+        if(page == null) page = 0;
 
+        items.addProperty("items", gson.toJson(boardService.getBoardList(page, null)));
+        items.addProperty("message", "success!");
 
-        return null;
+        return new ResponseEntity(gson.toJson(items), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")

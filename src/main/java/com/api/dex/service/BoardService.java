@@ -85,6 +85,24 @@ public class BoardService {
             boardDto.setCategory(board.getCategory());
             boardDto.setName(board.getBoardMember().getName());
 
+            List<File> fileList = board.getFiles();
+            Iterator<File> fileIterator = fileList.iterator();
+            List<FileDto> fileDtos = new ArrayList<>();
+
+            while (fileIterator.hasNext()){
+                File file = fileIterator.next();
+                FileDto fileDto = new FileDto();
+                fileDto.setFileType(file.getFileType());
+                fileDto.setPath(file.getPath());
+                fileDto.setServerName(file.getServerName());
+                fileDto.setOriginalName(file.getOriginalName());
+                fileDto.setId(file.getId());
+                fileDto.setSrc(src + fileDto.getId());
+
+                fileDtos.add(fileDto);
+            }
+
+            boardDto.setFileDtos(fileDtos);
             boardDtos.add(boardDto);
         }
         result.put("boards", boardDtos);
@@ -108,7 +126,6 @@ public class BoardService {
         List<File> fileList = board.getFiles();
         Iterator<File> iterator = fileList.iterator();
         List<FileDto> fileDtos = new ArrayList<>();
-        List<String> srcs = new LinkedList<>();
 
 
         while (iterator.hasNext()){
@@ -119,14 +136,12 @@ public class BoardService {
             fileDto.setServerName(file.getServerName());
             fileDto.setOriginalName(file.getOriginalName());
             fileDto.setId(file.getId());
-
-            srcs.add(src + fileDto.getId());
+            fileDto.setSrc(src + fileDto.getId());
 
             fileDtos.add(fileDto);
         }
         boardDto.setFileDtos(fileDtos);
         result.put("board", boardDto);
-        result.put("files", srcs);
 
         return result;
     }

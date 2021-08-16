@@ -12,4 +12,5 @@ public class FileDto {
     private String path;
     private Integer boardId;
     private String account;
+    private String src;
 }
