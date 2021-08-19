@@ -25,8 +25,8 @@ import java.util.List;
 @Transactional
 public class FileService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private static String path = "/home/ubuntu/files/";
-//    private static String path = "E://temp/files/";
+//    private static String path = "/home/ubuntu/files/";
+    private static String path = "E://temp/files/";
 
     @Autowired
     private FileRepository fileRepository;
@@ -36,6 +36,8 @@ public class FileService {
     private MemberRepository memberRepository;
 
     public File save(FileDto fileDto){
+        logger.info("File save getBoardId:::" + fileDto.getBoardId());
+
         File file = File.builder()
                 .board(boardRepository.findById(fileDto.getBoardId()))
                 .member(memberRepository.findByAccount(fileDto.getAccount()).orElseGet(() -> null))
@@ -52,22 +54,22 @@ public class FileService {
         return fileRepository.findById(id);
     }
 
-    public List<FileDto> insertFileList(MultipartFile[] multipartFiles, Integer boardId) throws IOException {
+    public List<FileDto> insertFileList(List<MultipartFile> multipartFiles, long boardId) throws IOException {
         List<FileDto> fileDtos = new ArrayList<>();
         SimpleDateFormat timeFormat = new SimpleDateFormat("yyMMddHHmmss");
         Date date = new Date();
         String realTime = timeFormat.format(date);
 
-        for(int i = 0; i < multipartFiles.length; i++){
+        for(int i = 0; i < multipartFiles.size(); i++){
             FileDto fileDto = new FileDto();
 
-            java.io.File file = new java.io.File(path, (realTime+multipartFiles[i].getOriginalFilename()));
-            multipartFiles[i].transferTo(file);
+            java.io.File file = new java.io.File(path, (realTime+multipartFiles.get(i).getOriginalFilename()));
+            multipartFiles.get(i).transferTo(file);
 
             fileDto.setBoardId(boardId);
-            fileDto.setOriginalName(multipartFiles[i].getOriginalFilename());
-            fileDto.setFileType(multipartFiles[i].getOriginalFilename().substring(multipartFiles[i].getOriginalFilename().lastIndexOf(".") + 1));
-            fileDto.setServerName(realTime+multipartFiles[i].getOriginalFilename());
+            fileDto.setOriginalName(multipartFiles.get(i).getOriginalFilename());
+            fileDto.setFileType(multipartFiles.get(i).getOriginalFilename().substring(multipartFiles.get(i).getOriginalFilename().lastIndexOf(".") + 1));
+            fileDto.setServerName(realTime+multipartFiles.get(i).getOriginalFilename());
             fileDto.setPath(path);
             fileDto.setId(save(fileDto).getId());
 

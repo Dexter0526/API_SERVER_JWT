@@ -114,7 +114,7 @@ public class BoardService {
 
     public Map<String, Object> getBoardById(Integer id){
         Map<String, Object> result = new LinkedHashMap<>();
-        Board board = boardRepository.findById((int) id).orElseThrow(() -> new IllegalArgumentException("Not found"));
+        Board board = boardRepository.findById(id);
 
         BoardDto boardDto = new BoardDto();
         boardDto.setId(board.getId());
