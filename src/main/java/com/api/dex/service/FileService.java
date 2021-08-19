@@ -110,11 +110,14 @@ public class FileService {
         }
 
         FileDto fileDto = new FileDto();
-        fileDto.setId(files.getContent().get(0).getId());
-        fileDto.setOriginalName(files.getContent().get(0).getOriginalName());
-        fileDto.setFileType(files.getContent().get(0).getFileType());
-        fileDto.setPath(files.getContent().get(0).getPath());
-        fileDto.setServerName(files.getContent().get(0).getServerName());
+        if(files != null && files.getSize() != 0){
+            fileDto.setId(files.getContent().get(0).getId());
+            fileDto.setOriginalName(files.getContent().get(0).getOriginalName());
+            fileDto.setFileType(files.getContent().get(0).getFileType());
+            fileDto.setPath(files.getContent().get(0).getPath());
+            fileDto.setServerName(files.getContent().get(0).getServerName());
+        }
+
 
         return fileDto;
     }

@@ -40,7 +40,7 @@ public class BoardController {
     @Autowired
     private FileService fileService;
 
-    @GetMapping("/")
+    @GetMapping("")
     public ResponseEntity getBoardPage(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "search", required = false) String search){
         Gson gson = new Gson();
         JsonObject items = new JsonObject();
