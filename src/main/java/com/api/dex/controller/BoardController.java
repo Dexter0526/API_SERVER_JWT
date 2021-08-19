@@ -54,7 +54,7 @@ public class BoardController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity getBoardById(@PathVariable(value = "id") Integer id){
+    public ResponseEntity getBoardById(@PathVariable(value = "id") Long id){
         Gson gson = new Gson();
         JsonObject items = new JsonObject();
         if(id != null){
@@ -67,10 +67,10 @@ public class BoardController {
         }
     }
 
-    @GetMapping("/{category}")
-    public ResponseEntity getBoardPageByCategory(@PathVariable(value = "category") String category, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "search", required = false) String search){
-        return null;
-    }
+//    @GetMapping("/{category}")
+//    public ResponseEntity getBoardPageByCategory(@PathVariable(value = "category") String category, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "search", required = false) String search){
+//        return null;
+//    }
 
     @PostMapping("/")
     public ResponseEntity insertBoard(@RequestBody BoardDto boardDto, Authentication authentication) throws IOException {

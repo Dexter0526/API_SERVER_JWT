@@ -40,9 +40,9 @@ public class BoardService {
         return boardRepository.save(board);
     }
 
-    public Board getBoardById(long id){
-        return boardRepository.getById(id);
-    }
+//    public Board getBoardById(long id){
+//        return boardRepository.findById(id);
+//    }
 
     public BoardDto insertBoard(BoardDto boardDto, String account){
         Board board = save(boardDto, account);
@@ -112,7 +112,7 @@ public class BoardService {
         return result;
     }
 
-    public Map<String, Object> getBoardById(Integer id){
+    public Map<String, Object> getBoardById(long id){
         Map<String, Object> result = new LinkedHashMap<>();
         Board board = boardRepository.findById(id);
 
