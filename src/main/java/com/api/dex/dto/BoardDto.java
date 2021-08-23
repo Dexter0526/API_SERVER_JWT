@@ -14,4 +14,5 @@ public class BoardDto {
     private String name;
     private long memberId;
     private List<FileDto> fileDtos;
+    private MemberDto memberDto;
 }

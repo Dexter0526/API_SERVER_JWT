@@ -6,6 +6,7 @@ import com.api.dex.domain.File;
 import com.api.dex.domain.MemberRepository;
 import com.api.dex.dto.BoardDto;
 import com.api.dex.dto.FileDto;
+import com.api.dex.dto.MemberDto;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.slf4j.Logger;
@@ -86,6 +87,7 @@ public class BoardService {
             boardDto.setCategory(board.getCategory());
             boardDto.setName(board.getBoardMember().getName());
             boardDto.setMemberId(board.getBoardMember().getId());
+
 
             List<File> fileList = board.getFiles();
             Iterator<File> fileIterator = fileList.iterator();
