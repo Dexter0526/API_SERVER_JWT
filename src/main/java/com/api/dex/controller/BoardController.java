@@ -6,6 +6,8 @@ import com.api.dex.dto.FileDto;
 import com.api.dex.service.BoardService;
 import com.api.dex.service.FileService;
 import com.api.dex.utils.JwtTokenProvider;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -41,13 +43,13 @@ public class BoardController {
     private FileService fileService;
 
     @GetMapping("")
-    public ResponseEntity getBoardPage(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "search", required = false) String search){
+    public ResponseEntity getBoardPage(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "search", required = false) String search) throws JsonProcessingException {
         Gson gson = new Gson();
         JsonObject items = new JsonObject();
 
         if(page == null) page = 0;
-
-        items.addProperty("items", gson.toJson(boardService.getBoardList(page, null)));
+        items.add("items", gson.toJsonTree(boardService.getBoardList(page, null)));
+//        items.addProperty("items", new ObjectMapper().writeValueAsString(boardService.getBoardList(page, null)));
         items.addProperty("message", "success!");
 
         return new ResponseEntity(gson.toJson(items), HttpStatus.OK);
@@ -58,7 +60,7 @@ public class BoardController {
         Gson gson = new Gson();
         JsonObject items = new JsonObject();
         if(id != null){
-            items.addProperty("items", gson.toJson(boardService.getBoardById(id)));
+            items.add("items", gson.toJsonTree(boardService.getBoardById(id)));
             items.addProperty("message", "success!");
             return new ResponseEntity(gson.toJson(items), HttpStatus.OK);
         }else{
