@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -67,9 +68,9 @@ public class BoardService {
         Page<Board> boards;
 
         if(account == null){
-            boards = boardRepository.findAll(PageRequest.of(page, 10));
+            boards = boardRepository.findAll(PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id")));
         }else{
-            boards = boardRepository.findByBoardMember_Account(account, PageRequest.of(page, 10));
+            boards = boardRepository.findByBoardMember_Account(account, PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id")));
         }
 
         Map<String, Object> result = new LinkedHashMap<>();
@@ -84,6 +85,7 @@ public class BoardService {
             boardDto.setContent(board.getContent());
             boardDto.setCategory(board.getCategory());
             boardDto.setName(board.getBoardMember().getName());
+            boardDto.setMemberId(board.getBoardMember().getId());
 
             List<File> fileList = board.getFiles();
             Iterator<File> fileIterator = fileList.iterator();
@@ -122,6 +124,7 @@ public class BoardService {
         boardDto.setContent(board.getContent());
         boardDto.setCategory(board.getCategory());
         boardDto.setName(board.getBoardMember().getName());
+        boardDto.setMemberId(board.getBoardMember().getId());
 
         List<File> fileList = board.getFiles();
         Iterator<File> iterator = fileList.iterator();
