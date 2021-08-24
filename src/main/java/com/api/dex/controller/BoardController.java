@@ -43,12 +43,19 @@ public class BoardController {
     private FileService fileService;
 
     @GetMapping("")
-    public ResponseEntity getBoardPage(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "search", required = false) String search) throws JsonProcessingException {
+    public ResponseEntity getBoardPage(@RequestParam(value = "page", required = false) Integer page,
+                                       @RequestParam(value = "search", required = false) String search,
+                                       @RequestParam(value = "account", required = false) String account) throws JsonProcessingException {
         Gson gson = new Gson();
         JsonObject items = new JsonObject();
 
         if(page == null) page = 0;
-        items.add("items", gson.toJsonTree(boardService.getBoardList(page, null)));
+        if(account == null){
+            items.add("items", gson.toJsonTree(boardService.getBoardList(page, null)));
+        }else{
+            items.add("items", gson.toJsonTree(boardService.getBoardList(page, account)));
+        }
+
 //        items.addProperty("items", new ObjectMapper().writeValueAsString(boardService.getBoardList(page, null)));
         items.addProperty("message", "success!");
 
@@ -95,14 +102,18 @@ public class BoardController {
 
     @PutMapping("/{id}")
     public ResponseEntity updateBoard(@PathVariable("id") long id, @RequestBody BoardDto boardDto, Authentication authentication, @RequestParam("files") MultipartFile[] multipartFile){
+
+
         return null;
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity deleteBoard(@PathVariable("id") long id, Authentication authentication){
-        return null;
+        SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();
+
+        boardService.deleteBoard(id, securityUser.getMember().getAccount());
+
+        return new ResponseEntity(HttpStatus.OK);
     }
-
-
 
 }
