@@ -65,13 +65,13 @@ public class BoardService {
         return boardDto;
     }
 
-    public Map<String, Object> getBoardList(int page, String account){
+    public Map<String, Object> getBoardList(int page, Long memberId){
         Page<Board> boards;
 
-        if(account == null){
+        if(memberId == null){
             boards = boardRepository.findAll(PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id")));
         }else{
-            boards = boardRepository.findByBoardMember_Account(account, PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id")));
+            boards = boardRepository.findByBoardMember_Id(memberId, PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id")));
         }
 
         Map<String, Object> result = new LinkedHashMap<>();

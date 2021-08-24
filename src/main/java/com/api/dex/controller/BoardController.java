@@ -50,11 +50,21 @@ public class BoardController {
         JsonObject items = new JsonObject();
 
         if(page == null) page = 0;
-        if(account == null){
-            items.add("items", gson.toJsonTree(boardService.getBoardList(page, null)));
-        }else{
-            items.add("items", gson.toJsonTree(boardService.getBoardList(page, account)));
-        }
+        items.add("items", gson.toJsonTree(boardService.getBoardList(page, null)));
+
+//        items.addProperty("items", new ObjectMapper().writeValueAsString(boardService.getBoardList(page, null)));
+        items.addProperty("message", "success!");
+
+        return new ResponseEntity(gson.toJson(items), HttpStatus.OK);
+    }
+
+    @GetMapping("/users/{memberId}")
+    public ResponseEntity getUserBoardPage(@PathVariable(value = "memberId") Long memberId, @RequestParam(value = "page", required = false) Integer page) throws JsonProcessingException {
+        Gson gson = new Gson();
+        JsonObject items = new JsonObject();
+
+        if(page == null) page = 0;
+        items.add("items", gson.toJsonTree(boardService.getBoardList(page, memberId)));
 
 //        items.addProperty("items", new ObjectMapper().writeValueAsString(boardService.getBoardList(page, null)));
         items.addProperty("message", "success!");
