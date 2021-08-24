@@ -9,11 +9,13 @@ import javax.persistence.Column;
 @Data
 public class MemberDto {
 
+    private long id;
     private String account;
     private String password;
     private String name;
     private String token;
     private String info;
+    private String src;
     private MemberRole memberRole;
 
 }

@@ -1,9 +1,6 @@
 package com.api.dex.service;
 
-import com.api.dex.domain.Board;
-import com.api.dex.domain.BoardRepository;
-import com.api.dex.domain.File;
-import com.api.dex.domain.MemberRepository;
+import com.api.dex.domain.*;
 import com.api.dex.dto.BoardDto;
 import com.api.dex.dto.FileDto;
 import com.api.dex.dto.MemberDto;
@@ -31,6 +28,9 @@ public class BoardService {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private FileRepository fileRepository;
 
     public Board save(BoardDto boardDto, String account){
         Board board = Board.builder()
@@ -80,14 +80,24 @@ public class BoardService {
 
         while (iterator.hasNext()){
             Board board = iterator.next();
+
             BoardDto boardDto = new BoardDto();
+            MemberDto memberDto = new MemberDto();
+
+            Member member = board.getBoardMember();
+            Page<File> files = fileRepository.findByFileMember_Account(member.getAccount(), PageRequest.of(0, 1, Sort.by(Sort.Direction.DESC, "id")));
+
             boardDto.setId(board.getId());
             boardDto.setTitle(board.getTitle());
             boardDto.setContent(board.getContent());
             boardDto.setCategory(board.getCategory());
-            boardDto.setName(board.getBoardMember().getName());
-            boardDto.setMemberId(board.getBoardMember().getId());
 
+            memberDto.setId(member.getId());
+            memberDto.setInfo(member.getInfo());
+            memberDto.setName(member.getName());
+            if(files.getTotalElements() != 0) memberDto.setSrc(src + files.getContent().get(0).getId());
+
+            boardDto.setMemberDto(memberDto);
 
             List<File> fileList = board.getFiles();
             Iterator<File> fileIterator = fileList.iterator();
@@ -121,17 +131,26 @@ public class BoardService {
         Board board = boardRepository.findById(id);
 
         BoardDto boardDto = new BoardDto();
+        MemberDto memberDto = new MemberDto();
+
+        Member member = board.getBoardMember();
+        Page<File> files = fileRepository.findByFileMember_Account(member.getAccount(), PageRequest.of(0, 1, Sort.by(Sort.Direction.DESC, "id")));
+
         boardDto.setId(board.getId());
         boardDto.setTitle(board.getTitle());
         boardDto.setContent(board.getContent());
         boardDto.setCategory(board.getCategory());
-        boardDto.setName(board.getBoardMember().getName());
-        boardDto.setMemberId(board.getBoardMember().getId());
+
+        memberDto.setId(member.getId());
+        memberDto.setInfo(member.getInfo());
+        memberDto.setName(member.getName());
+        if(files.getTotalElements() != 0) memberDto.setSrc(src + files.getContent().get(0).getId());
+
+        boardDto.setMemberDto(memberDto);
 
         List<File> fileList = board.getFiles();
         Iterator<File> iterator = fileList.iterator();
         List<FileDto> fileDtos = new ArrayList<>();
-
 
         while (iterator.hasNext()){
             File file = iterator.next();

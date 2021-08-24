@@ -12,7 +12,7 @@ public class BoardDto {
     private String title;
     private String content;
     private String name;
-    private long memberId;
+//    private long memberId;
     private List<FileDto> fileDtos;
     private MemberDto memberDto;
 }

@@ -104,8 +104,10 @@ public class FileService {
         Page<File> files = null;
 
         if(account != null){
+//            로그인 당사자
             files = fileRepository.findByFileMember_Account(account, PageRequest.of(page, 1, Sort.by(Sort.Direction.DESC, "id")));
         }else{
+//            이벤트 발생 회원
             files = fileRepository.findByFileMember_Id(memberId, PageRequest.of(page, 1, Sort.by(Sort.Direction.DESC, "id")));
         }
 
