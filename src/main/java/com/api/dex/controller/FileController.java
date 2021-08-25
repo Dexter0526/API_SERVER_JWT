@@ -36,7 +36,7 @@ public class FileController {
     public void getFile(HttpServletResponse response, @PathVariable(value = "id") Long id) throws IOException {
         File file = fileService.getFileById(id);
 
-        if(file.getOriginalName() != null){
+        if(file != null){
             String extension = FilenameUtils.getExtension(file.getOriginalName());
 
             byte[] files = org.apache.commons.io.FileUtils.readFileToByteArray(new java.io.File(file.getPath() + file.getServerName()));
