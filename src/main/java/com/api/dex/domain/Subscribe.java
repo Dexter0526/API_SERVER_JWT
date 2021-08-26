@@ -19,14 +19,14 @@ public class Subscribe extends BaseEntity {
 
     @ManyToOne
     @JsonBackReference
-//    @JoinColumn(name = "member_id")
-    @JoinColumn
-    private Member fallow;
+    @JoinColumn(name = "board_id")
+    private Board like;
 
     @ManyToOne
     @JsonBackReference
-    @JoinColumn(name = "board_id")
-    private Board like;
+//    @JoinColumn(name = "member_id")
+    @JoinColumn
+    private Member fallow;
 
 //    @OneToMany(mappedBy = "fileMember", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
 //    @JsonManagedReference
