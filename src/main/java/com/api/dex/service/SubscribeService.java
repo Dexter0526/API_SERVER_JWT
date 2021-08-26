@@ -52,5 +52,5 @@ public class SubscribeService {
         return subscribeDto;
     }
 
-    
+
 }
