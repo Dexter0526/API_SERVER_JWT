@@ -36,14 +36,14 @@ public class SubscribeService {
 
         if(subscribeDto.getOwnerId() != 0){
             owner = memberRepository.findById(subscribeDto.getOwnerId()).orElseThrow(() -> new SearchException("Not found member!"));
-        }else{
+        }else if (subscribeDto.getBoardId() != 0){
             board = boardRepository.findById(subscribeDto.getBoardId());
         }
 
         Subscribe subscribe = Subscribe.builder()
                 .owner(owner)
                 .like(board)
-                .fallow(memberRepository.findById(subscribeDto.getFallowId()).orElseThrow(() -> new SearchException("Not found member!")))
+                .fallow(memberRepository.findByAccount(subscribeDto.getFallowAccount()).orElseThrow(() -> new SearchException("Not found member!")))
                 .build();
 
         return subscribeRepository.save(subscribe);
@@ -93,7 +93,11 @@ public class SubscribeService {
         result.put("TotalElements", subscribePage.getTotalElements());
         result.put("page", page);
 
-        return null;
+        return result;
+    }
+
+    public void deleteSubscribe(Long id, String account){
+        subscribeRepository.deleteByIdAndFallow_Account(id, account);
     }
 
 }
