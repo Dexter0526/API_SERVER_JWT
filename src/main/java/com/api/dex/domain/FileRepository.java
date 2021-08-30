@@ -13,5 +13,9 @@ public interface FileRepository extends JpaRepository<File, Long> {
 
     Page<File> findByFileMember_Account(String account, Pageable pageable);
 
-    Page<File> findByFileMember_Id(long id, Pageable pageable);
+    Page<File> findByFileMember_Id(long memberId, Pageable pageable);
+
+    File findTopByFileMember_IdOrderByIdDesc(long memberId);
+
+    File findFirstByFileMember_IdOrderByIdDesc(long memberId);
 }

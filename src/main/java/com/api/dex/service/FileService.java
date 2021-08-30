@@ -5,6 +5,7 @@ import com.api.dex.domain.File;
 import com.api.dex.domain.FileRepository;
 import com.api.dex.domain.MemberRepository;
 import com.api.dex.dto.FileDto;
+import com.api.dex.utils.PathManagement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ import java.util.List;
 @Transactional
 public class FileService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private static String path = "/home/ubuntu/files/";
+//    private static String path = "/home/ubuntu/files/";
 //    private static String path = "E://temp/files/";
 
     @Autowired
@@ -63,14 +64,14 @@ public class FileService {
         for(int i = 0; i < multipartFiles.size(); i++){
             FileDto fileDto = new FileDto();
 
-            java.io.File file = new java.io.File(path, (realTime+multipartFiles.get(i).getOriginalFilename()));
+            java.io.File file = new java.io.File(PathManagement.path, (realTime+multipartFiles.get(i).getOriginalFilename()));
             multipartFiles.get(i).transferTo(file);
 
             fileDto.setBoardId(boardId);
             fileDto.setOriginalName(multipartFiles.get(i).getOriginalFilename());
             fileDto.setFileType(multipartFiles.get(i).getOriginalFilename().substring(multipartFiles.get(i).getOriginalFilename().lastIndexOf(".") + 1));
             fileDto.setServerName(realTime+multipartFiles.get(i).getOriginalFilename());
-            fileDto.setPath(path);
+            fileDto.setPath(PathManagement.path);
             fileDto.setId(save(fileDto).getId());
 
             fileDtos.add(fileDto);
@@ -86,20 +87,21 @@ public class FileService {
 
         FileDto fileDto = new FileDto();
 
-        java.io.File file = new java.io.File(path, (realTime+multipartFiles.getOriginalFilename()));
+        java.io.File file = new java.io.File(PathManagement.path, (realTime+multipartFiles.getOriginalFilename()));
         multipartFiles.transferTo(file);
 
         fileDto.setAccount(account);
         fileDto.setOriginalName(multipartFiles.getOriginalFilename());
         fileDto.setFileType(multipartFiles.getOriginalFilename().substring(multipartFiles.getOriginalFilename().lastIndexOf(".") + 1));
         fileDto.setServerName(realTime+multipartFiles.getOriginalFilename());
-        fileDto.setPath(path);
+        fileDto.setPath(PathManagement.path);
         fileDto.setId(save(fileDto).getId());
 
 
         return fileDto;
     }
 
+//    프로필 사진
     public FileDto getFileByMember(long memberId, String account, int page){
         Page<File> files = null;
 
@@ -131,13 +133,13 @@ public class FileService {
 
         FileDto fileDto = new FileDto();
 
-        java.io.File file = new java.io.File(path, (realTime+multipartFiles.getOriginalFilename()));
+        java.io.File file = new java.io.File(PathManagement.path, (realTime+multipartFiles.getOriginalFilename()));
         multipartFiles.transferTo(file);
 
         fileDto.setOriginalName(multipartFiles.getOriginalFilename());
         fileDto.setFileType(multipartFiles.getOriginalFilename().substring(multipartFiles.getOriginalFilename().lastIndexOf(".") + 1));
         fileDto.setServerName(realTime+multipartFiles.getOriginalFilename());
-        fileDto.setPath(path);
+        fileDto.setPath(PathManagement.path);
         fileDto.setId(save(fileDto).getId());
 
 

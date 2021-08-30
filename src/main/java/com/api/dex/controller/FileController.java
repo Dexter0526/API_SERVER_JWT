@@ -4,6 +4,7 @@ import com.api.dex.domain.File;
 import com.api.dex.domain.SecurityUser;
 import com.api.dex.dto.FileDto;
 import com.api.dex.service.FileService;
+import com.api.dex.utils.PathManagement;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.apache.commons.io.FilenameUtils;
@@ -30,7 +31,7 @@ public class FileController {
     @Autowired
     private FileService fileService;
 
-    private final static String src = "https://vlaos-smartwork.com/api/files/";
+//    private final static String src = "https://vlaos-smartwork.com/api/files/";
 
     @GetMapping("/{id}")
     public void getFile(HttpServletResponse response, @PathVariable(value = "id") Long id) throws IOException {
@@ -113,7 +114,7 @@ public class FileController {
         JsonObject data = new JsonObject();
 
         data.add("file", gson.toJsonTree(fileDto));
-        data.addProperty("src", src + fileDto.getId());
+        data.addProperty("src", PathManagement.src + fileDto.getId());
         items.add("items", data);
         items.addProperty("message", "success!");
 

@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper=false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Entity(name="log")
+@Entity(name="subscribe")
 public class Subscribe extends BaseEntity {
     @ManyToOne
     @JsonBackReference

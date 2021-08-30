@@ -4,6 +4,7 @@ import com.api.dex.domain.*;
 import com.api.dex.dto.BoardDto;
 import com.api.dex.dto.FileDto;
 import com.api.dex.dto.MemberDto;
+import com.api.dex.utils.PathManagement;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.slf4j.Logger;
@@ -21,7 +22,7 @@ import java.util.*;
 @Transactional
 public class BoardService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private final static String src = "https://vlaos-smartwork.com/api/files/";
+//    private final static String src = "https://vlaos-smartwork.com/api/files/";
 
     @Autowired
     private BoardRepository boardRepository;
@@ -95,7 +96,7 @@ public class BoardService {
             memberDto.setId(member.getId());
             memberDto.setInfo(member.getInfo());
             memberDto.setName(member.getName());
-            if(files.getTotalElements() != 0) memberDto.setSrc(src + files.getContent().get(0).getId());
+            if(files.getTotalElements() != 0) memberDto.setSrc(PathManagement.src + files.getContent().get(0).getId());
 
             boardDto.setMemberDto(memberDto);
 
@@ -111,7 +112,7 @@ public class BoardService {
                 fileDto.setServerName(file.getServerName());
                 fileDto.setOriginalName(file.getOriginalName());
                 fileDto.setId(file.getId());
-                fileDto.setSrc(src + fileDto.getId());
+                fileDto.setSrc(PathManagement.src + fileDto.getId());
 
                 fileDtos.add(fileDto);
             }
@@ -144,7 +145,7 @@ public class BoardService {
         memberDto.setId(member.getId());
         memberDto.setInfo(member.getInfo());
         memberDto.setName(member.getName());
-        if(files.getTotalElements() != 0) memberDto.setSrc(src + files.getContent().get(0).getId());
+        if(files.getTotalElements() != 0) memberDto.setSrc(PathManagement.src + files.getContent().get(0).getId());
 
         boardDto.setMemberDto(memberDto);
 
@@ -160,7 +161,7 @@ public class BoardService {
             fileDto.setServerName(file.getServerName());
             fileDto.setOriginalName(file.getOriginalName());
             fileDto.setId(file.getId());
-            fileDto.setSrc(src + fileDto.getId());
+            fileDto.setSrc(PathManagement.src + fileDto.getId());
 
             fileDtos.add(fileDto);
         }
