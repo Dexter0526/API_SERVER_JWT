@@ -13,11 +13,19 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 //		MultipartAutoConfiguration.class}) // Tomcat 의 Multipart Library 사용하기 때문에 spring boot 의 Multipart 기능을 exclude 함.
 @SpringBootApplication
 public class DexApplication extends SpringBootServletInitializer {
+	public static final String APPLICATION_LOCATIONS = "spring.config.location="
+			+ "classpath:application.yml,"
+			+ "classpath:aws.yml";
+
+//	public static void main(String[] args) {
+//		SpringApplication.run(DexApplication.class, args);
+//	}
 
 	public static void main(String[] args) {
-		SpringApplication.run(DexApplication.class, args);
+		new SpringApplicationBuilder(DexApplication.class)
+				.properties(APPLICATION_LOCATIONS)
+				.run(args);
 	}
-
 //	@Override protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
 //		return builder.sources(DexApplication.class);
 //	}
