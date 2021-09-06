@@ -1,9 +1,6 @@
 package com.api.dex.service;
 
-import com.api.dex.domain.BoardRepository;
-import com.api.dex.domain.File;
-import com.api.dex.domain.FileRepository;
-import com.api.dex.domain.MemberRepository;
+import com.api.dex.domain.*;
 import com.api.dex.dto.FileDto;
 import com.api.dex.utils.S3;
 import org.slf4j.Logger;
@@ -153,9 +150,21 @@ public class FileService {
         return fileDto;
     }
 
+    @Transactional
     public void deleteFile(long id, String account){
         File file = fileRepository.findById(id);
-        if(file.getFileBoard().getBoardMember().getAccount().equals(account) || file.getFileMember().getAccount().equals(account)){
+
+        Member member = null;
+        if(file.getFileBoard().getBoardMember() != null){
+            member = file.getFileBoard().getBoardMember();
+        }else if(file.getFileMember() != null){
+            member = file.getFileMember();
+        }else{
+            return;
+        }
+
+        if(member.getAccount().equals(account)){
+            s3.fileDelete(file.getPath(), file.getServerName());
             fileRepository.delete(file);
         }
     }

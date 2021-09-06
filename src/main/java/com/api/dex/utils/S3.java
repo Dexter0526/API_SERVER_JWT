@@ -92,9 +92,9 @@ public class S3 {
     }
 
     // 파일 삭제
-    public void fileDelete(String fileName) {
+    public void fileDelete(String folderName, String fileName) {
         logger.info("fileName : " + fileName);
-        String imgName = (fileName).replace(File.separatorChar, '/');
+        String imgName = folderName + (fileName).replace(File.separatorChar, '/');
         amazonS3Client.deleteObject(this.bucket, imgName);
         logger.info("삭제성공");
     }
@@ -109,5 +109,9 @@ public class S3 {
 
     public String getSrc(String folderName, String fileName){
         return s3Url + folderName + "/" + fileName;
+    }
+
+    public void getObject(String folderName, String fileName){
+        amazonS3Client.getObject(folderName, fileName);
     }
 }
