@@ -1,18 +1,15 @@
 package com.api.dex.controller;
 
-import com.api.dex.domain.SecurityUser;
 import com.api.dex.dto.FileDto;
 import com.api.dex.dto.MemberDto;
 import com.api.dex.service.FileService;
 import com.api.dex.service.MemberService;
-import com.api.dex.utils.PathManagement;
 import com.api.dex.utils.S3;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

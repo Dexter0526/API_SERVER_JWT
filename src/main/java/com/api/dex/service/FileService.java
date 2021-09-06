@@ -5,7 +5,6 @@ import com.api.dex.domain.File;
 import com.api.dex.domain.FileRepository;
 import com.api.dex.domain.MemberRepository;
 import com.api.dex.dto.FileDto;
-import com.api.dex.utils.PathManagement;
 import com.api.dex.utils.S3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -141,13 +140,13 @@ public class FileService {
 
         FileDto fileDto = new FileDto();
 
-        java.io.File file = new java.io.File(PathManagement.path, (realTime+multipartFiles.getOriginalFilename()));
-        multipartFiles.transferTo(file);
+//        java.io.File file = new java.io.File(PathManagement.path, (realTime+multipartFiles.getOriginalFilename()));
+//        multipartFiles.transferTo(file);
 
         fileDto.setOriginalName(multipartFiles.getOriginalFilename());
         fileDto.setFileType(multipartFiles.getOriginalFilename().substring(multipartFiles.getOriginalFilename().lastIndexOf(".") + 1));
         fileDto.setServerName(realTime+multipartFiles.getOriginalFilename());
-        fileDto.setPath(PathManagement.path);
+//        fileDto.setPath(PathManagement.path);
         fileDto.setId(save(fileDto).getId());
 
 

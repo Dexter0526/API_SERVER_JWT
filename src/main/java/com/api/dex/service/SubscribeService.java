@@ -2,7 +2,6 @@ package com.api.dex.service;
 
 import com.api.dex.domain.*;
 import com.api.dex.dto.SubscribeDto;
-import com.api.dex.utils.PathManagement;
 import com.api.dex.utils.S3;
 import org.hibernate.search.exception.SearchException;
 import org.slf4j.Logger;

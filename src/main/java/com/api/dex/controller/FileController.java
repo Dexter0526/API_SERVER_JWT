@@ -4,12 +4,10 @@ import com.api.dex.domain.File;
 import com.api.dex.domain.SecurityUser;
 import com.api.dex.dto.FileDto;
 import com.api.dex.service.FileService;
-import com.api.dex.utils.PathManagement;
 import com.api.dex.utils.S3;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URLEncoder;
 import java.util.List;
 
