@@ -6,6 +6,7 @@ import com.api.dex.dto.MemberDto;
 import com.api.dex.service.FileService;
 import com.api.dex.service.MemberService;
 import com.api.dex.utils.PathManagement;
+import com.api.dex.utils.S3;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +18,14 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/members")
 public class MemberController {
-//    private final static String src = "https://vlaos-smartwork.com/api/files/";
-
     @Autowired
     private MemberService memberService;
 
     @Autowired
     private FileService fileService;
+
+    @Autowired
+    private S3 s3;
 
     @GetMapping("/{id}")
     public ResponseEntity getMemberInfo(@PathVariable(value = "id") Integer id){
@@ -37,7 +39,7 @@ public class MemberController {
 
             dtoObject.add("member", gson.toJsonTree(memberDto));
             dtoObject.add("file", gson.toJsonTree(fileDto));
-            dtoObject.addProperty("src", PathManagement.src + fileDto.getId());
+            dtoObject.addProperty("src", s3.getSrc(fileDto.getPath(), fileDto.getServerName()));
             jsonObject.add("items", dtoObject);
             jsonObject.addProperty("message", "success!!");
 

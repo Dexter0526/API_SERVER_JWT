@@ -3,6 +3,7 @@ package com.api.dex.service;
 import com.api.dex.domain.*;
 import com.api.dex.dto.SubscribeDto;
 import com.api.dex.utils.PathManagement;
+import com.api.dex.utils.S3;
 import org.hibernate.search.exception.SearchException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +18,7 @@ import java.util.*;
 @Service
 public class SubscribeService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-//    private final static String src = "https://vlaos-smartwork.com/api/files/";
+
     @Autowired
     private SubscribeRepository subscribeRepository;
 
@@ -29,6 +30,9 @@ public class SubscribeService {
 
     @Autowired
     private FileRepository fileRepository;
+
+    @Autowired
+    private S3 s3;
 
     public Subscribe save(SubscribeDto subscribeDto){
         Member owner = null;
@@ -78,13 +82,15 @@ public class SubscribeService {
         while (iterator.hasNext()){
             Subscribe subscribe = iterator.next();
             SubscribeDto subscribeDto = new SubscribeDto();
+            File file = fileRepository.findFirstByFileMember_IdOrderByIdDesc(subscribe.getFallow().getId());
 
             subscribeDto.setId(subscribe.getId());
             subscribeDto.setOwnerId(subscribe.getOwner().getId());
             subscribeDto.setBoardId(subscribe.getLike().getId());
             subscribeDto.setFallowId(subscribe.getFallow().getId());
             subscribeDto.setFallowName(subscribe.getFallow().getName());
-            subscribeDto.setFallowSrc(PathManagement.src + fileRepository.findFirstByFileMember_IdOrderByIdDesc(subscribe.getFallow().getId()).getId());
+//            subscribeDto.setFallowSrc(PathManagement.src + fileRepository.findFirstByFileMember_IdOrderByIdDesc(subscribe.getFallow().getId()).getId());
+            subscribeDto.setFallowSrc(s3.getSrc(file.getPath(), file.getServerName()));
 
             subscribeDtoList.add(subscribeDto);
         }

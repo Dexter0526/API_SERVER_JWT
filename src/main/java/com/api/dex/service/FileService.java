@@ -6,6 +6,7 @@ import com.api.dex.domain.FileRepository;
 import com.api.dex.domain.MemberRepository;
 import com.api.dex.dto.FileDto;
 import com.api.dex.utils.PathManagement;
+import com.api.dex.utils.S3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,9 @@ public class FileService {
     @Autowired
     private MemberRepository memberRepository;
 
+    @Autowired
+    private S3 s3;
+
     public File save(FileDto fileDto){
         logger.info("File save getBoardId:::" + fileDto.getBoardId());
 
@@ -64,14 +68,16 @@ public class FileService {
         for(int i = 0; i < multipartFiles.size(); i++){
             FileDto fileDto = new FileDto();
 
-            java.io.File file = new java.io.File(PathManagement.path, (realTime+multipartFiles.get(i).getOriginalFilename()));
-            multipartFiles.get(i).transferTo(file);
+//            java.io.File file = new java.io.File(PathManagement.path, (realTime+multipartFiles.get(i).getOriginalFilename()));
+//            multipartFiles.get(i).transferTo(file);
+
+            s3.upload(multipartFiles.get(i), Long.toString(boardId), realTime);
 
             fileDto.setBoardId(boardId);
             fileDto.setOriginalName(multipartFiles.get(i).getOriginalFilename());
             fileDto.setFileType(multipartFiles.get(i).getOriginalFilename().substring(multipartFiles.get(i).getOriginalFilename().lastIndexOf(".") + 1));
             fileDto.setServerName(realTime+multipartFiles.get(i).getOriginalFilename());
-            fileDto.setPath(PathManagement.path);
+            fileDto.setPath(Long.toString(boardId));
             fileDto.setId(save(fileDto).getId());
 
             fileDtos.add(fileDto);
@@ -87,14 +93,16 @@ public class FileService {
 
         FileDto fileDto = new FileDto();
 
-        java.io.File file = new java.io.File(PathManagement.path, (realTime+multipartFiles.getOriginalFilename()));
-        multipartFiles.transferTo(file);
+//        java.io.File file = new java.io.File(PathManagement.path, (realTime+multipartFiles.getOriginalFilename()));
+//        multipartFiles.transferTo(file);
+
+        s3.upload(multipartFiles, account, realTime);
 
         fileDto.setAccount(account);
         fileDto.setOriginalName(multipartFiles.getOriginalFilename());
         fileDto.setFileType(multipartFiles.getOriginalFilename().substring(multipartFiles.getOriginalFilename().lastIndexOf(".") + 1));
         fileDto.setServerName(realTime+multipartFiles.getOriginalFilename());
-        fileDto.setPath(PathManagement.path);
+        fileDto.setPath(account);
         fileDto.setId(save(fileDto).getId());
 
 
