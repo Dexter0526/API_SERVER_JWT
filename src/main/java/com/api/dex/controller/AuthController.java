@@ -21,6 +21,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 @RestController
@@ -68,13 +69,23 @@ public class AuthController {
 
     // 로그인
     @PutMapping("/")
-    public ResponseEntity login(@RequestBody Map<String, String> user) {
+    public ResponseEntity login(@RequestBody Map<String, String> user, HttpServletRequest request) {
         Gson gson = new Gson();
         HttpHeaders httpHeaders = new HttpHeaders();
         JsonObject items = new JsonObject();
         JsonObject data = new JsonObject();
         Member member = memberRepository.findByAccount(user.get("account"))
                 .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 E-MAIL 입니다."));
+
+//        oauth refresh token
+//        String refreshToken = request.getHeader("refreshToken");
+//
+//        if(refreshToken != null){
+//            String email = jwtTokenProvider.getEmailByToken(refreshToken);
+//            if(member.getAccount().equals(email)){
+//
+//            }
+//        }
         if (!passwordEncoder.matches(user.get("password"), member.getPassword())) {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }
@@ -176,7 +187,6 @@ public class AuthController {
         Gson gson = new Gson();
         JsonObject items = new JsonObject();
         JsonObject data = new JsonObject();
-
 
         if(authentication != null){
             SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();

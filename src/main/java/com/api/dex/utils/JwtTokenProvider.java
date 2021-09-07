@@ -88,6 +88,11 @@ public class JwtTokenProvider {
     // 토큰에서 회원 정보 추출
     public String getUserPk(String token) {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+//        return Jwts.parser().parseClaimsJws(token).getBody().getSubject();
+    }
+
+    public String getEmailByToken(String token){
+        return (String) Jwts.parser().parseClaimsJws(token).getBody().get("email");
     }
 
     // Request의 Header에서 token 값을 가져옵니다. "X-AUTH-TOKEN" : "TOKEN값'
