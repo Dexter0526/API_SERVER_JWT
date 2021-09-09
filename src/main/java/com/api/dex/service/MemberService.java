@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -55,6 +56,21 @@ public class MemberService {
         }else{
             return null;
         }
+    }
+
+    public Member OauthMember(MemberDto memberDto){
+        if(memberDto.getMemberRole() == null) memberDto.setMemberRole(new MemberRole(MemberRole.RoleType.ROLE_USER));
+        String[] temp = UUID.randomUUID().toString().split("-");
+        String password = "";
+
+        for(String item : temp){
+            password += item;
+        }
+
+        memberDto.setPassword(password);
+
+        return memberRepository.findByAccount(memberDto.getAccount())
+                .orElseGet(() -> save(memberDto));
     }
 
     public MemberDto getMember(long id){
