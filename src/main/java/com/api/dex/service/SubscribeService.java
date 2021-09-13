@@ -84,8 +84,12 @@ public class SubscribeService {
             File file = fileRepository.findFirstByFileMember_IdOrderByIdDesc(subscribe.getFallow().getId());
 
             subscribeDto.setId(subscribe.getId());
-            subscribeDto.setOwnerId(subscribe.getOwner().getId());
-            subscribeDto.setBoardId(subscribe.getLike().getId());
+            if(subscribe.getOwner() != null){
+                subscribeDto.setOwnerId(subscribe.getOwner().getId());
+            }
+            if(subscribe.getLike() != null){
+                subscribeDto.setBoardId(subscribe.getLike().getId());
+            }
             subscribeDto.setFallowId(subscribe.getFallow().getId());
             subscribeDto.setFallowName(subscribe.getFallow().getName());
 //            subscribeDto.setFallowSrc(PathManagement.src + fileRepository.findFirstByFileMember_IdOrderByIdDesc(subscribe.getFallow().getId()).getId());
