@@ -4,6 +4,7 @@ import com.api.dex.domain.*;
 import com.api.dex.dto.BoardDto;
 import com.api.dex.dto.FileDto;
 import com.api.dex.dto.MemberDto;
+import com.api.dex.dto.SubscribeDto;
 import com.api.dex.utils.S3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +30,9 @@ public class BoardService {
 
     @Autowired
     private FileRepository fileRepository;
+
+    @Autowired
+    private SubscribeRepository subscribeRepository;
 
     @Autowired
     private S3 s3;
@@ -66,7 +70,7 @@ public class BoardService {
         return boardDto;
     }
 
-    public Map<String, Object> getBoardList(int page, Long memberId){
+    public Map<String, Object> getBoardList(int page, Long memberId, Long fallowId){
         Page<Board> boards;
 
         if(memberId == null){
@@ -87,11 +91,19 @@ public class BoardService {
 
             Member member = board.getBoardMember();
             Page<File> files = fileRepository.findByFileMember_Account(member.getAccount(), PageRequest.of(0, 1, Sort.by(Sort.Direction.DESC, "id")));
+            Subscribe subscribe = subscribeRepository.findByLike_IdAndFallow_Id(board.getId(), fallowId);
 
             boardDto.setId(board.getId());
             boardDto.setTitle(board.getTitle());
             boardDto.setContent(board.getContent());
             boardDto.setCategory(board.getCategory());
+
+            if(subscribe != null){
+                SubscribeDto subscribeDto = new SubscribeDto();
+                subscribeDto.setId(subscribe.getId());
+                subscribeDto.setFallowId(subscribe.getFallow().getId());
+                boardDto.setFallow(subscribeDto);
+            }
 
             memberDto.setId(member.getId());
             memberDto.setInfo(member.getInfo());
@@ -129,9 +141,10 @@ public class BoardService {
         return result;
     }
 
-    public Map<String, Object> getBoardById(long id){
+    public Map<String, Object> getBoardById(long id, Long fallowId){
         Map<String, Object> result = new LinkedHashMap<>();
         Board board = boardRepository.findById(id);
+        Subscribe subscribe = subscribeRepository.findByLike_IdAndFallow_Id(board.getId(), fallowId);
 
         BoardDto boardDto = new BoardDto();
         MemberDto memberDto = new MemberDto();
@@ -143,6 +156,13 @@ public class BoardService {
         boardDto.setTitle(board.getTitle());
         boardDto.setContent(board.getContent());
         boardDto.setCategory(board.getCategory());
+
+        if(subscribe != null){
+            SubscribeDto subscribeDto = new SubscribeDto();
+            subscribeDto.setId(subscribe.getId());
+            subscribeDto.setFallowId(subscribe.getFallow().getId());
+            boardDto.setFallow(subscribeDto);
+        }
 
         memberDto.setId(member.getId());
         memberDto.setInfo(member.getInfo());

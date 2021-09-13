@@ -45,12 +45,14 @@ public class BoardController {
     @GetMapping("")
     public ResponseEntity getBoardPage(@RequestParam(value = "page", required = false) Integer page,
                                        @RequestParam(value = "search", required = false) String search,
-                                       @RequestParam(value = "account", required = false) String account) throws JsonProcessingException {
+                                       @RequestParam(value = "account", required = false) String account,
+                                       Authentication authentication) throws JsonProcessingException {
         Gson gson = new Gson();
         JsonObject items = new JsonObject();
+        SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();
 
         if(page == null) page = 0;
-        items.add("items", gson.toJsonTree(boardService.getBoardList(page, null)));
+        items.add("items", gson.toJsonTree(boardService.getBoardList(page, null, securityUser.getMember().getId())));
 
 //        items.addProperty("items", new ObjectMapper().writeValueAsString(boardService.getBoardList(page, null)));
         items.addProperty("message", "success!");
@@ -59,12 +61,13 @@ public class BoardController {
     }
 
     @GetMapping("/users/{memberId}")
-    public ResponseEntity getUserBoardPage(@PathVariable(value = "memberId") Long memberId, @RequestParam(value = "page", required = false) Integer page) throws JsonProcessingException {
+    public ResponseEntity getUserBoardPage(@PathVariable(value = "memberId") Long memberId, @RequestParam(value = "page", required = false) Integer page, Authentication authentication) throws JsonProcessingException {
         Gson gson = new Gson();
         JsonObject items = new JsonObject();
+        SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();
 
         if(page == null) page = 0;
-        items.add("items", gson.toJsonTree(boardService.getBoardList(page, memberId)));
+        items.add("items", gson.toJsonTree(boardService.getBoardList(page, memberId, securityUser.getMember().getId())));
 
 //        items.addProperty("items", new ObjectMapper().writeValueAsString(boardService.getBoardList(page, null)));
         items.addProperty("message", "success!");
@@ -73,11 +76,14 @@ public class BoardController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity getBoardById(@PathVariable(value = "id") Long id){
+    public ResponseEntity getBoardById(@PathVariable(value = "id") Long id, Authentication authentication){
         Gson gson = new Gson();
         JsonObject items = new JsonObject();
+
+        SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();
+
         if(id != null){
-            items.add("items", gson.toJsonTree(boardService.getBoardById(id)));
+            items.add("items", gson.toJsonTree(boardService.getBoardById(id, securityUser.getMember().getId())));
             items.addProperty("message", "success!");
             return new ResponseEntity(gson.toJson(items), HttpStatus.OK);
         }else{

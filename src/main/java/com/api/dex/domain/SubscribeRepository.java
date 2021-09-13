@@ -12,6 +12,9 @@ public interface SubscribeRepository extends JpaRepository<Subscribe, Long> {
 
     Page<Subscribe> findByOwner_Id(long ownerId, Pageable pageable);
 
+    Subscribe findByOwner_IdAndFallow_Id(long ownerId, long fallowId);
+    Subscribe findByLike_IdAndFallow_Id(long boardId, long fallowId);
+
     @Transactional
     void deleteByIdAndFallow_Account(long id, String account);
 }

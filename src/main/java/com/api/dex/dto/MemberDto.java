@@ -18,4 +18,6 @@ public class MemberDto {
     private String src;
     private MemberRole memberRole;
 
+    //    접속자 팔로우 여부
+    private SubscribeDto fallow;
 }

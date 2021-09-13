@@ -14,5 +14,8 @@ public class BoardDto {
     private String name;
 //    private long memberId;
     private List<FileDto> fileDtos;
+//    보드 주인
     private MemberDto memberDto;
+//    접속자 팔로우 여부
+    private SubscribeDto fallow;
 }
