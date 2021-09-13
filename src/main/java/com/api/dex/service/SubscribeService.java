@@ -36,17 +36,24 @@ public class SubscribeService {
     public Subscribe save(SubscribeDto subscribeDto){
         Member owner = null;
         Board board = null;
-
+        Member member = memberRepository.findByAccount(subscribeDto.getFallowAccount()).orElseThrow(() -> new SearchException("Not found member!"));
         if(subscribeDto.getOwnerId() != 0){
             owner = memberRepository.findById(subscribeDto.getOwnerId()).orElseThrow(() -> new SearchException("Not found member!"));
+            if(subscribeRepository.findByOwner_IdAndFallow_Id(owner.getId(), member.getId()) != null){
+                logger.info("exception !!!!");
+                throw new IllegalArgumentException("이미 존재합니다");
+            }
         }else if (subscribeDto.getBoardId() != 0){
             board = boardRepository.findById(subscribeDto.getBoardId());
+            if(subscribeRepository.findByLike_IdAndFallow_Id(board.getId(), member.getId()) != null){
+                throw new IllegalArgumentException("이미 존재합니다");
+            }
         }
 
         Subscribe subscribe = Subscribe.builder()
                 .owner(owner)
                 .like(board)
-                .fallow(memberRepository.findByAccount(subscribeDto.getFallowAccount()).orElseThrow(() -> new SearchException("Not found member!")))
+                .fallow(member)
                 .build();
 
         return subscribeRepository.save(subscribe);
