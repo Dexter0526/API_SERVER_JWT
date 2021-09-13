@@ -1,5 +1,6 @@
 package com.api.dex.controller;
 
+import com.api.dex.domain.SecurityUser;
 import com.api.dex.dto.FileDto;
 import com.api.dex.dto.MemberDto;
 import com.api.dex.service.FileService;
@@ -10,6 +11,7 @@ import com.google.gson.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,14 +27,16 @@ public class MemberController {
     private S3 s3;
 
     @GetMapping("/{id}")
-    public ResponseEntity getMemberInfo(@PathVariable(value = "id") Integer id){
+    public ResponseEntity getMemberInfo(@PathVariable(value = "id") Integer id, Authentication authentication){
         JsonObject jsonObject = new JsonObject();
         JsonObject dtoObject = new JsonObject();
         Gson gson = new Gson();
 
+        SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();
+
         if(id != null){
-            MemberDto memberDto = memberService.getMember(id);
-            FileDto fileDto = fileService.getFileByMember(id,memberDto.getAccount(), 0);
+            MemberDto memberDto = memberService.getMember(id, securityUser.getMember().getId());
+            FileDto fileDto = fileService.getFileByMember(id, memberDto.getAccount(), 0);
 
             dtoObject.add("member", gson.toJsonTree(memberDto));
             dtoObject.add("file", gson.toJsonTree(fileDto));

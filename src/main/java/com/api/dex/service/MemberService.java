@@ -3,6 +3,7 @@ package com.api.dex.service;
 import com.api.dex.domain.*;
 import com.api.dex.dto.FileDto;
 import com.api.dex.dto.MemberDto;
+import com.api.dex.dto.SubscribeDto;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.slf4j.Logger;
@@ -34,6 +35,9 @@ public class MemberService {
 
     @Autowired
     private BoardRepository boardRepository;
+
+    @Autowired
+    private SubscribeRepository subscribeRepository;
 
     public Member save(MemberDto memberDto){
         Member member = Member.builder()
@@ -73,18 +77,25 @@ public class MemberService {
                 .orElseGet(() -> save(memberDto));
     }
 
-    public MemberDto getMember(long id){
+    public MemberDto getMember(long id, Long fallowId){
 
 //        JsonObject jsonObject = new JsonObject();
 //        Gson gson = new Gson();
 
         Member member = memberRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Not found"));
 //        Page<File> file = fileRepository.findByFileMember_Id(id, PageRequest.of(0, 1));
-
+        Subscribe subscribe = subscribeRepository.findByOwner_IdAndFallow_Id(member.getId(), fallowId);
         MemberDto memberDto = new MemberDto();
         memberDto.setInfo(member.getInfo());
         memberDto.setAccount(member.getAccount());
         memberDto.setName(member.getName());
+
+        if(subscribe != null){
+            SubscribeDto subscribeDto = new SubscribeDto();
+            subscribeDto.setId(subscribe.getId());
+            subscribeDto.setFallowId(subscribe.getFallow().getId());
+            memberDto.setFallow(subscribeDto);
+        }
 //        jsonObject.add("member", gson.toJsonTree(memberDto));
 //
 //        FileDto fileDto = new FileDto();
