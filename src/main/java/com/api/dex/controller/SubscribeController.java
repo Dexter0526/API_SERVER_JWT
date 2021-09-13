@@ -55,6 +55,7 @@ public class SubscribeController {
         JsonObject jsonObject = new JsonObject();
         SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();
         subscribeDto.setFallowName(securityUser.getMember().getName());
+        subscribeDto.setFallowAccount(securityUser.getMember().getAccount());
 
         subscribeDto = subscribeService.insertSubscribe(subscribeDto);
 
