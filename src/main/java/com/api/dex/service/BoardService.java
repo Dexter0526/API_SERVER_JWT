@@ -67,6 +67,8 @@ public class BoardService {
         board.setContent(boardDto.getContent());
         board.setTitle(boardDto.getTitle());
 
+        boardRepository.save(board);
+
         return boardDto;
     }
 

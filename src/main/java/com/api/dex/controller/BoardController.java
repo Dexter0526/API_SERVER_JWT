@@ -117,10 +117,20 @@ public class BoardController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity updateBoard(@PathVariable("id") long id, @RequestBody BoardDto boardDto, Authentication authentication, @RequestParam("files") MultipartFile[] multipartFile){
+    public ResponseEntity updateBoard(@PathVariable("id") long id, @RequestBody BoardDto boardDto, Authentication authentication){
+        Gson gson = new Gson();
+        JsonObject items = new JsonObject();
+        JsonObject data = new JsonObject();
 
+        SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();
 
-        return null;
+        boardDto.setId(id);
+
+        data.add("board", gson.toJsonTree(boardService.updateBoard(boardDto, securityUser.getMember().getAccount())));
+        items.add("items", data);
+        items.addProperty("message", "success!");
+
+        return new ResponseEntity(gson.toJson(items), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

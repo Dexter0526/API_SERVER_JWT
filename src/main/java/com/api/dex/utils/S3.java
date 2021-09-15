@@ -93,8 +93,14 @@ public class S3 {
 
     // 파일 삭제
     public void fileDelete(String folderName, String fileName) {
-        logger.info("fileName : " + fileName);
-        String imgName = folderName + (fileName).replace(File.separatorChar, '/');
+        logger.info("fileDelete fileName : " + fileName);
+        String imgName = folderName;
+
+        if(fileName.length() > 0){
+            imgName += "/" + (fileName).replace(File.separatorChar, '/');
+        }
+        
+        logger.info("imgName : " + imgName);
         amazonS3Client.deleteObject(this.bucket, imgName);
         logger.info("삭제성공");
     }

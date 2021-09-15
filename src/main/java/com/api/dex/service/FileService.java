@@ -155,7 +155,7 @@ public class FileService {
         File file = fileRepository.findById(id);
 
         Member member = null;
-        if(file.getFileBoard().getBoardMember() != null){
+        if(file.getFileBoard() != null){
             member = file.getFileBoard().getBoardMember();
         }else if(file.getFileMember() != null){
             member = file.getFileMember();
