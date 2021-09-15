@@ -196,7 +196,9 @@ public class BoardService {
     }
 
     public void deleteBoard(long id, String account){
+
         boardRepository.deleteByIdAndBoardMember_Account(id, account);
+        s3.fileDelete(Long.toString(id), "");
     }
 
 }
