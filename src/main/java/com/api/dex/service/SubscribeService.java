@@ -100,8 +100,7 @@ public class SubscribeService {
             subscribeDto.setFallowId(subscribe.getFallow().getId());
             subscribeDto.setFallowName(subscribe.getFallow().getName());
 //            subscribeDto.setFallowSrc(PathManagement.src + fileRepository.findFirstByFileMember_IdOrderByIdDesc(subscribe.getFallow().getId()).getId());
-            subscribeDto.setFallowSrc(s3.getSrc(file.getPath(), file.getServerName()));
-
+            if(file != null) subscribeDto.setFallowSrc(s3.getSrc(file.getPath(), file.getServerName()));
             subscribeDtoList.add(subscribeDto);
         }
 
