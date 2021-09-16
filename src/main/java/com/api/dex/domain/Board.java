@@ -34,6 +34,10 @@ public class Board extends BaseEntity implements Serializable {
     @JsonManagedReference
     private List<File> files;
 
+    @OneToMany(mappedBy = "like", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<Subscribe> likes;
+
     @Builder
     public Board(String category, String title, String content, Member member){
         this.category = category;

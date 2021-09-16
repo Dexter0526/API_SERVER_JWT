@@ -42,6 +42,14 @@ public class Member extends BaseEntity implements Serializable  {
     @JsonManagedReference
     private List<File> files;
 
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<Subscribe> owners;
+
+    @OneToMany(mappedBy = "fallow", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<Subscribe> fallows;
+
     @Builder
     public Member(MemberRole memberRole, String account, String password, String name, String info, String token) {
         this.memberRole = memberRole;

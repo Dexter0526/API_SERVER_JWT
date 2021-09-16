@@ -19,7 +19,7 @@ public class Subscribe extends BaseEntity {
 
     @ManyToOne
     @JsonBackReference
-    @JoinColumn(name = "board_id")
+    @JoinColumn
     private Board like;
 
     @ManyToOne

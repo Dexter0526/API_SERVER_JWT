@@ -99,7 +99,7 @@ public class S3 {
         if(fileName.length() > 0){
             imgName += "/" + (fileName).replace(File.separatorChar, '/');
         }
-        
+
         logger.info("imgName : " + imgName);
         amazonS3Client.deleteObject(this.bucket, imgName);
         logger.info("삭제성공");
