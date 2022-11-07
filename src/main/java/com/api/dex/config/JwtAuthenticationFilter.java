@@ -43,7 +43,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         }else if(refreshToken != null && jwtTokenProvider.validateToken(refreshToken)){
             Member member = jwtTokenProvider.validateRefreshToken(refreshToken);
 
-            String accessToken = jwtTokenProvider.createToken(member.getAccount(), member.getMemberRole(), tokenValidTime);
+            String accessToken = jwtTokenProvider.createToken(member.getAccount(), member.getMemberRole());
             // 토큰이 유효하면 토큰으로부터 유저 정보를 받아옵니다.
             Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
             // SecurityContext 에 Authentication 객체를 저장합니다.
