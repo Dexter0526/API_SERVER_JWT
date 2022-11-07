@@ -2,19 +2,16 @@ package com.api.dex.controller;
 
 import com.api.dex.domain.Member;
 import com.api.dex.domain.MemberRepository;
-import com.api.dex.domain.MemberRole;
 import com.api.dex.domain.SecurityUser;
 import com.api.dex.dto.MemberDto;
 import com.api.dex.service.MemberService;
-import com.api.dex.utils.JsonParser;
 import com.api.dex.utils.JwtTokenProvider;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -26,6 +23,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
+@RequiredArgsConstructor
 public class AuthController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -33,19 +31,13 @@ public class AuthController {
     private long accessTokenValidTime = 30 * 60 * 1000L;
     private long refreshTokenValidTime = 7 * 24 * 60 * 60 * 1000L;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
-    @Autowired
-    private MemberRepository memberRepository;
-    @Autowired
-    private MemberService memberService;
-    @Autowired
-    private JsonParser jsonParser;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
     // 회원가입
-    @PostMapping("/")
+    @PostMapping(value = "/")
     public ResponseEntity<String> sign(@RequestBody MemberDto memberDto) {
         Gson gson = new Gson();
         JsonObject items = new JsonObject();
@@ -77,15 +69,7 @@ public class AuthController {
         Member member = memberRepository.findByAccount(user.get("account"))
                 .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 E-MAIL 입니다."));
 
-//        oauth refresh token
-//        String refreshToken = request.getHeader("refreshToken");
-//
-//        if(refreshToken != null){
-//            String email = jwtTokenProvider.getEmailByToken(refreshToken);
-//            if(member.getAccount().equals(email)){
-//
-//            }
-//        }
+
         if (!passwordEncoder.matches(user.get("password"), member.getPassword())) {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }

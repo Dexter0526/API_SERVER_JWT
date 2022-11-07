@@ -10,10 +10,10 @@ import java.io.Serializable;
 import java.util.List;
 
 @Data
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Entity(name="member")
-public class Member extends BaseEntity implements Serializable  {
+@Entity(name = "member")
+public class Member extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = -6430942442101448953L;
 
@@ -58,7 +58,6 @@ public class Member extends BaseEntity implements Serializable  {
         this.name = name;
         this.info = info;
         this.token = token;
-
     }
 
 }

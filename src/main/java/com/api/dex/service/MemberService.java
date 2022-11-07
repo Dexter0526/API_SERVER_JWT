@@ -58,7 +58,7 @@ public class MemberService {
             if(memberDto.getMemberRole() == null) memberDto.setMemberRole(new MemberRole(MemberRole.RoleType.ROLE_USER));
             return save(memberDto);
         }else{
-            return null;
+            throw new RuntimeException();
         }
     }
 
