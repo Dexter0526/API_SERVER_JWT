@@ -1,23 +1,16 @@
 package com.api.dex.service;
 
 import com.api.dex.domain.*;
-import com.api.dex.dto.FileDto;
 import com.api.dex.dto.MemberDto;
 import com.api.dex.dto.SubscribeDto;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import com.api.dex.utils.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Iterator;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -28,28 +21,30 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
     private final SubscribeRepository subscribeRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
-    public void insertMember(MemberDto memberDto){
+    public void insertMember(MemberDto memberDto) {
         logger.info("insert member:::" + memberDto.getAccount());
 
-        if(memberRepository.findByAccount(memberDto.getAccount()).isEmpty()){
-            if(memberDto.getMemberRole() == null) memberDto.setMemberRole(new MemberRole(MemberRole.RoleType.ROLE_USER));
+        if (memberRepository.findByAccount(memberDto.getAccount()).isEmpty()) {
+            if (memberDto.getMemberRole() == null)
+                memberDto.setMemberRole(new MemberRole(MemberRole.RoleType.ROLE_USER));
 
             Member.save(memberDto.getMemberRole(), memberDto.getAccount(), passwordEncoder.encode(memberDto.getPassword()),
                     memberDto.getName(), memberDto.getInfo(), memberDto.getToken());
-        }else{
+        } else {
             throw new RuntimeException();
         }
     }
 
     @Transactional
-    public Member OauthMember(MemberDto memberDto){
-        if(memberDto.getMemberRole() == null) memberDto.setMemberRole(new MemberRole(MemberRole.RoleType.ROLE_USER));
+    public Member OauthMember(MemberDto memberDto) {
+        if (memberDto.getMemberRole() == null) memberDto.setMemberRole(new MemberRole(MemberRole.RoleType.ROLE_USER));
         String[] temp = UUID.randomUUID().toString().split("-");
         String password = "";
 
-        for(String item : temp){
+        for (String item : temp) {
             password += item;
         }
 
@@ -61,16 +56,18 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public MemberDto getMember(long id, Long fallowId){
+    public MemberDto getMember(long id, Long fallowId) {
 
         Member member = memberRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Not found"));
         Subscribe subscribe = subscribeRepository.findByOwner_IdAndFallow_Id(member.getId(), fallowId);
-        MemberDto memberDto = new MemberDto();
-        memberDto.setInfo(member.getInfo());
-        memberDto.setAccount(member.getAccount());
-        memberDto.setName(member.getName());
 
-        if(subscribe != null){
+        MemberDto memberDto = MemberDto.builder()
+                .account(member.getAccount())
+                .name(member.getName())
+                .info(member.getInfo())
+                .build();
+
+        if (subscribe != null) {
             SubscribeDto subscribeDto = new SubscribeDto();
             subscribeDto.setId(subscribe.getId());
             subscribeDto.setFallowId(subscribe.getFallow().getId());
@@ -81,12 +78,12 @@ public class MemberService {
     }
 
     @Transactional
-    public Member updateMember(MemberDto memberDto, String account){
+    public Member updateMember(MemberDto memberDto, String account) {
         Member member = memberRepository.findByAccount(account)
                 .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 E-MAIL 입니다."));
 
         member.setInfo(memberDto.getInfo());
-        if(memberDto.getPassword() != null){
+        if (memberDto.getPassword() != null) {
             member.setPassword(passwordEncoder.encode(memberDto.getPassword()));
         }
 
@@ -96,7 +93,34 @@ public class MemberService {
     }
 
     @Transactional
-    public void deleteMember(String account){
+    public void deleteMember(String account) {
         memberRepository.deleteByAccount(account);
+    }
+
+    @Transactional
+    public MemberDto login(String account, String pwd) {
+        Member member = memberRepository.findByAccount(account)
+                .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 E-MAIL 입니다."));
+
+        logger.info("controller login:::" + member.getAccount());
+
+        checkPwd(pwd, member.getPassword());
+
+        String accessToken = jwtTokenProvider.createToken(member.getAccount(), member.getMemberRole());
+        jwtTokenProvider.createRefreshToken(member.getAccount(), member.getMemberRole());
+
+        return MemberDto.builder()
+                .id(member.getId())
+                .account(member.getAccount())
+                .info(member.getInfo())
+                .name(member.getName())
+                .token(accessToken)
+                .build();
+    }
+
+    private void checkPwd(String paramPwd, String memberPwd) {
+        if (!passwordEncoder.matches(paramPwd, memberPwd)) {
+            throw new IllegalArgumentException("잘못된 비밀번호입니다.");
+        }
     }
 }
