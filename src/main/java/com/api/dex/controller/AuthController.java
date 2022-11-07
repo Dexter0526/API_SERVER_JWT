@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -38,10 +39,9 @@ public class AuthController {
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
     private final MemberService memberService;
-    private final ResponseDto responseDto;
 
     // 회원가입
-    @PostMapping(value = "/")
+    @PostMapping(value = "/", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseDto sign(@RequestBody MemberDto memberDto) {
         logger.info("controller sign:::" + memberDto.getAccount());
 
@@ -55,8 +55,8 @@ public class AuthController {
     }
 
     // 로그인
-    @PutMapping("/")
-    public ResponseEntity login(@RequestBody Map<String, String> user, HttpServletRequest request) {
+    @PutMapping(value = "/", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity login(@RequestBody Map<String, String> user) {
         Gson gson = new Gson();
         HttpHeaders httpHeaders = new HttpHeaders();
         JsonObject items = new JsonObject();
@@ -64,11 +64,12 @@ public class AuthController {
         Member member = memberRepository.findByAccount(user.get("account"))
                 .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 E-MAIL 입니다."));
 
-
         if (!passwordEncoder.matches(user.get("password"), member.getPassword())) {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }
+
         logger.info("controller login:::" + member.getAccount());
+
         String accessToken = jwtTokenProvider.createToken(member.getAccount(), member.getMemberRole(), accessTokenValidTime);
         String refreshToken = jwtTokenProvider.createRefreshToken(member.getAccount(), member.getMemberRole(), refreshTokenValidTime);
 
