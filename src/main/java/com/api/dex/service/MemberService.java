@@ -6,6 +6,7 @@ import com.api.dex.dto.MemberDto;
 import com.api.dex.dto.SubscribeDto;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,48 +21,29 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@Transactional
+@RequiredArgsConstructor
 public class MemberService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
+    private final MemberRepository memberRepository;
+    private final SubscribeRepository subscribeRepository;
 
-    @Autowired
-    private MemberRepository memberRepository;
-
-    @Autowired
-    private FileRepository fileRepository;
-
-    @Autowired
-    private BoardRepository boardRepository;
-
-    @Autowired
-    private SubscribeRepository subscribeRepository;
-
-    public Member save(MemberDto memberDto){
-        Member member = Member.builder()
-                .account(memberDto.getAccount())
-                .password(passwordEncoder.encode(memberDto.getPassword()))
-                .name(memberDto.getName())
-                .info(memberDto.getInfo())
-                .token(memberDto.getToken())
-                .memberRole(memberDto.getMemberRole())
-                .build();
-        return memberRepository.save(member);
-    }
-
-    public Member insertMember(MemberDto memberDto){
+    @Transactional
+    public void insertMember(MemberDto memberDto){
         logger.info("insert member:::" + memberDto.getAccount());
-        Boolean result = memberRepository.findByAccount(memberDto.getAccount()).isEmpty();
-        if(result){
+
+        if(memberRepository.findByAccount(memberDto.getAccount()).isEmpty()){
             if(memberDto.getMemberRole() == null) memberDto.setMemberRole(new MemberRole(MemberRole.RoleType.ROLE_USER));
-            return save(memberDto);
+
+            Member.save(memberDto.getMemberRole(), memberDto.getAccount(), passwordEncoder.encode(memberDto.getPassword()),
+                    memberDto.getName(), memberDto.getInfo(), memberDto.getToken());
         }else{
             throw new RuntimeException();
         }
     }
 
+    @Transactional
     public Member OauthMember(MemberDto memberDto){
         if(memberDto.getMemberRole() == null) memberDto.setMemberRole(new MemberRole(MemberRole.RoleType.ROLE_USER));
         String[] temp = UUID.randomUUID().toString().split("-");
@@ -74,16 +56,14 @@ public class MemberService {
         memberDto.setPassword(password);
 
         return memberRepository.findByAccount(memberDto.getAccount())
-                .orElseGet(() -> save(memberDto));
+                .orElseGet(() -> Member.save(memberDto.getMemberRole(), memberDto.getAccount(), passwordEncoder.encode(memberDto.getPassword()),
+                        memberDto.getName(), memberDto.getInfo(), memberDto.getToken()));
     }
 
+    @Transactional(readOnly = true)
     public MemberDto getMember(long id, Long fallowId){
 
-//        JsonObject jsonObject = new JsonObject();
-//        Gson gson = new Gson();
-
         Member member = memberRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Not found"));
-//        Page<File> file = fileRepository.findByFileMember_Id(id, PageRequest.of(0, 1));
         Subscribe subscribe = subscribeRepository.findByOwner_IdAndFallow_Id(member.getId(), fallowId);
         MemberDto memberDto = new MemberDto();
         memberDto.setInfo(member.getInfo());
@@ -96,44 +76,11 @@ public class MemberService {
             subscribeDto.setFallowId(subscribe.getFallow().getId());
             memberDto.setFallow(subscribeDto);
         }
-//        jsonObject.add("member", gson.toJsonTree(memberDto));
-//
-//        FileDto fileDto = new FileDto();
-//        fileDto.setId(file.getContent().get(0).getId());
-//        fileDto.setOriginalName(file.getContent().get(0).getOriginalName());
-//        fileDto.setFileType(file.getContent().get(0).getFileType());
-//        fileDto.setPath(file.getContent().get(0).getPath());
-//        fileDto.setServerName(file.getContent().get(0).getServerName());
-//        jsonObject.add("file", gson.toJsonTree(fileDto));
 
         return memberDto;
     }
 
-    public MemberDto getMemberByAuth(String account){
-
-//        JsonObject jsonObject = new JsonObject();
-//        Gson gson = new Gson();
-
-        Member member = memberRepository.findByAccount(account).orElseThrow(() -> new IllegalArgumentException("Not found"));
-//        Page<File> files = fileRepository.findByFileMember_Account(account, PageRequest.of(0, 1));
-//        Page<Board> boards = boardRepository.findByBoardMember_Account(account, PageRequest.of(0, 6));
-
-        MemberDto memberDto = new MemberDto();
-        memberDto.setInfo(member.getInfo());
-        memberDto.setAccount(member.getAccount());
-        memberDto.setName(memberDto.getName());
-//        jsonObject.add("member", gson.toJsonTree(memberDto));
-//
-//        FileDto fileDto = new FileDto();
-//        fileDto.setId(files.getContent().get(0).getId());
-//        fileDto.setOriginalName(files.getContent().get(0).getOriginalName());
-//        fileDto.setFileType(files.getContent().get(0).getFileType());
-//        fileDto.setPath(files.getContent().get(0).getPath());
-//        fileDto.setServerName(files.getContent().get(0).getServerName());
-
-        return memberDto;
-    }
-
+    @Transactional
     public Member updateMember(MemberDto memberDto, String account){
         Member member = memberRepository.findByAccount(account)
                 .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 E-MAIL 입니다."));
@@ -148,9 +95,8 @@ public class MemberService {
         return memberRepository.save(member);
     }
 
+    @Transactional
     public void deleteMember(String account){
         memberRepository.deleteByAccount(account);
     }
-
-
 }

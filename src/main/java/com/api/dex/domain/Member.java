@@ -1,5 +1,6 @@
 package com.api.dex.domain;
 
+import com.api.dex.dto.MemberDto;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
@@ -50,8 +51,7 @@ public class Member extends BaseEntity implements Serializable {
     @JsonManagedReference
     private List<Subscribe> fallows;
 
-    @Builder
-    public Member(MemberRole memberRole, String account, String password, String name, String info, String token) {
+    private Member(MemberRole memberRole, String account, String password, String name, String info, String token) {
         this.memberRole = memberRole;
         this.account = account;
         this.password = password;
@@ -60,4 +60,7 @@ public class Member extends BaseEntity implements Serializable {
         this.token = token;
     }
 
+    public static Member save(MemberRole memberRole, String account, String password, String name, String info, String token){
+        return new Member(memberRole, account, password, name, info, token);
+    }
 }

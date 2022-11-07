@@ -2,9 +2,12 @@ package com.api.dex.controller;
 
 import com.api.dex.domain.Member;
 import com.api.dex.domain.MemberRepository;
+import com.api.dex.domain.MemberRole;
 import com.api.dex.domain.SecurityUser;
 import com.api.dex.dto.MemberDto;
+import com.api.dex.dto.ResponseDto;
 import com.api.dex.service.MemberService;
+import com.api.dex.utils.JsonParser;
 import com.api.dex.utils.JwtTokenProvider;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -35,28 +38,20 @@ public class AuthController {
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
     private final MemberService memberService;
+    private final ResponseDto responseDto;
 
     // 회원가입
     @PostMapping(value = "/")
-    public ResponseEntity<String> sign(@RequestBody MemberDto memberDto) {
-        Gson gson = new Gson();
-        JsonObject items = new JsonObject();
-        JsonObject data = new JsonObject();
-
+    public ResponseDto sign(@RequestBody MemberDto memberDto) {
         logger.info("controller sign:::" + memberDto.getAccount());
 
-        Member member = memberService.insertMember(memberDto);
+        memberService.insertMember(memberDto);
 
-        if(member != null){
-            data.addProperty("account", member.getAccount());
-            data.addProperty("name", member.getName());
-            items.add("items", data);
-            items.addProperty("message", "sign for success!");
-        }else{
-            items.addProperty("message", "존재 하는 아이디 입니다.");
-        }
-
-        return new ResponseEntity<>(gson.toJson(items), HttpStatus.OK);
+        return ResponseDto.builder()
+                .code(HttpStatus.OK)
+                .message("Success")
+                .data(memberDto)
+                .build();
     }
 
     // 로그인
