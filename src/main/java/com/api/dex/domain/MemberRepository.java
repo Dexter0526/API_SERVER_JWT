@@ -1,12 +1,11 @@
 package com.api.dex.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.Query;
 
 import javax.transaction.Transactional;
 import java.util.Optional;
 
-@Repository
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
     Member findById(Integer id);
@@ -17,6 +16,10 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     Optional<Member> findByIdAndAccount(long id, String account);
 
+    @Query("select m from member m " +
+            "left join fetch m.fallows ")
+    Optional<Member> findByIdWithSubscribe(long id);
+
     @Transactional
-    Long deleteByAccount(String account);
+    void deleteByAccount(String account);
 }
