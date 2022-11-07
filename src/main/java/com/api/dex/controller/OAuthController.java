@@ -24,11 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/oauth")
 public class OAuthController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    // 토큰 유효시간 30분
-    private long accessTokenValidTime = 30 * 60 * 1000L;
-    private long refreshTokenValidTime = 7 * 24 * 60 * 60 * 1000L;
-
     @Value("${myapp.secret}")
     private String myappKey;
 
@@ -53,8 +48,8 @@ public class OAuthController {
         if(memberDto.getToken() != null && memberDto.getToken().equals(myappKey)){
             Member member = memberService.OauthMember(memberDto);
 
-            String accessToken = jwtTokenProvider.createToken(member.getAccount(), member.getMemberRole(), accessTokenValidTime);
-            String refreshToken = jwtTokenProvider.createRefreshToken(member.getAccount(), member.getMemberRole(), refreshTokenValidTime);
+            String accessToken = jwtTokenProvider.createToken(member.getAccount(), member.getMemberRole());
+            String refreshToken = jwtTokenProvider.createRefreshToken(member.getAccount(), member.getMemberRole());
 
             httpHeaders.add("accessToken", accessToken);
             httpHeaders.add("refreshToken", refreshToken);
