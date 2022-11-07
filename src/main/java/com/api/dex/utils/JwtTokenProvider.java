@@ -34,12 +34,11 @@ public class JwtTokenProvider {
 //    }
 
     // 토큰 유효시간 30분
-//    private long tokenValidTime = 30 * 60 * 1000L;
-    @Autowired
-    private MemberRepository memberRepository;
+    private long accessTokenValidTime = 30 * 60 * 1000L;
+    private long refreshTokenValidTime = 7 * 24 * 60 * 60 * 1000L;
 
-    @Autowired
-    private SecurityUserService securityUserService;
+    private final MemberRepository memberRepository;
+    private final SecurityUserService securityUserService;
 
     // 객체 초기화, secretKey를 Base64로 인코딩한다.
     @PostConstruct
@@ -48,20 +47,20 @@ public class JwtTokenProvider {
     }
 
     // JWT 토큰 생성
-    public String createToken(String userPk, MemberRole roles, long tokenValidTime) {
+    public String createToken(String userPk, MemberRole roles) {
         Claims claims = Jwts.claims().setSubject(userPk); // JWT payload 에 저장되는 정보단위
         claims.put("roles", roles.getClass().getName()); // 정보는 key / value 쌍으로 저장된다.
         Date now = new Date();
         return Jwts.builder()
                 .setClaims(claims) // 정보 저장
                 .setIssuedAt(now) // 토큰 발행 시간 정보
-                .setExpiration(new Date(now.getTime() + tokenValidTime)) // set Expire Time
+                .setExpiration(new Date(now.getTime() + accessTokenValidTime)) // set Expire Time
                 .signWith(SignatureAlgorithm.HS256, secretKey)  // 사용할 암호화 알고리즘과
                 // signature 에 들어갈 secret값 세팅
                 .compact();
     }
 
-    public String createRefreshToken(String userPk, MemberRole roles, long tokenValidTime) {
+    public String createRefreshToken(String userPk, MemberRole roles) {
         Claims claims = Jwts.claims().setSubject(userPk); // JWT payload 에 저장되는 정보단위
         claims.put("roles", roles.getClass().getName()); // 정보는 key / value 쌍으로 저장된다.
         Date now = new Date();
@@ -69,11 +68,11 @@ public class JwtTokenProvider {
         String refreshToken = Jwts.builder()
                 .setClaims(claims) // 정보 저장
                 .setIssuedAt(now) // 토큰 발행 시간 정보
-                .setExpiration(new Date(now.getTime() + tokenValidTime)) // set Expire Time
+                .setExpiration(new Date(now.getTime() + refreshTokenValidTime)) // set Expire Time
                 .signWith(SignatureAlgorithm.HS256, secretKey)  // 사용할 암호화 알고리즘과
                 // signature 에 들어갈 secret값 세팅
                 .compact();
-        Member member = memberRepository.findByAccount(userPk).get();
+        Member member = memberRepository.findByAccount(userPk).orElseThrow(RuntimeException::new);
         member.setToken(refreshToken);
 
         return memberRepository.save(member).getToken();
