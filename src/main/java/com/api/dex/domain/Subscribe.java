@@ -24,13 +24,8 @@ public class Subscribe extends BaseEntity {
 
     @ManyToOne
     @JsonBackReference
-//    @JoinColumn(name = "member_id")
     @JoinColumn
     private Member fallow;
-
-//    @OneToMany(mappedBy = "fileMember", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-//    @JsonManagedReference
-//    private List<Member> members;
 
     @Builder
     public Subscribe(Member owner, Member fallow, Board like){
