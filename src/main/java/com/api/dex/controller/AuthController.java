@@ -2,12 +2,10 @@ package com.api.dex.controller;
 
 import com.api.dex.domain.Member;
 import com.api.dex.domain.MemberRepository;
-import com.api.dex.domain.MemberRole;
 import com.api.dex.domain.SecurityUser;
 import com.api.dex.dto.MemberDto;
 import com.api.dex.dto.ResponseDto;
 import com.api.dex.service.MemberService;
-import com.api.dex.utils.JsonParser;
 import com.api.dex.utils.JwtTokenProvider;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -19,10 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 @RestController
@@ -31,12 +27,6 @@ import java.util.Map;
 public class AuthController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    // 토큰 유효시간 30분
-    private long accessTokenValidTime = 30 * 60 * 1000L;
-    private long refreshTokenValidTime = 7 * 24 * 60 * 60 * 1000L;
-
-    private final PasswordEncoder passwordEncoder;
-    private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
     private final MemberService memberService;
 
@@ -56,33 +46,14 @@ public class AuthController {
 
     // 로그인
     @PutMapping(value = "/", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity login(@RequestBody Map<String, String> user) {
-        Gson gson = new Gson();
-        HttpHeaders httpHeaders = new HttpHeaders();
-        JsonObject items = new JsonObject();
-        JsonObject data = new JsonObject();
-        Member member = memberRepository.findByAccount(user.get("account"))
-                .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 E-MAIL 입니다."));
+    public ResponseDto login(@RequestBody Map<String, String> user) {
+        MemberDto memberDto = memberService.login(user.get("account"), user.get("password"));
 
-        if (!passwordEncoder.matches(user.get("password"), member.getPassword())) {
-            throw new IllegalArgumentException("잘못된 비밀번호입니다.");
-        }
-
-        logger.info("controller login:::" + member.getAccount());
-
-        String accessToken = jwtTokenProvider.createToken(member.getAccount(), member.getMemberRole(), accessTokenValidTime);
-        String refreshToken = jwtTokenProvider.createRefreshToken(member.getAccount(), member.getMemberRole(), refreshTokenValidTime);
-
-        httpHeaders.add("accessToken", accessToken);
-        httpHeaders.add("refreshToken", refreshToken);
-
-        data.addProperty("id", member.getId());
-        data.addProperty("account", member.getAccount());
-        data.addProperty("info", member.getInfo());
-        data.addProperty("name", member.getName());
-        items.add("items", data);
-
-        return new ResponseEntity(gson.toJson(items), httpHeaders, HttpStatus.OK);
+        return ResponseDto.builder()
+                .code(HttpStatus.OK)
+                .message("Success")
+                .data(memberDto)
+                .build();
     }
 
     @PutMapping("/{account}")
